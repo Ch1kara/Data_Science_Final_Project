@@ -3,7 +3,7 @@ pygame.init()
 
 # screen size and title at the top
 screen = pygame.display.set_mode((750,500))
-pygame.display.set_caption("Pokemon")
+pygame.display.set_caption("Pokemon Game")
 
 # defining colors needed for the future
 black = (0, 0, 0)
@@ -13,8 +13,10 @@ green = (0, 200, 0)
 red = (200, 0, 0)
 white = (255, 255, 255)
 
-run = True
+# Use the base set of Pokemon from before, but eventually use json to scrape pokemon data from Pokemon API
 
+run = True
+# Game Loop
 while run:
     # event.get() for loop should be at the start
     for event in pygame.event.get():
