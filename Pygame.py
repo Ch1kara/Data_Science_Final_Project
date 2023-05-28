@@ -1,10 +1,12 @@
+import urllib
 import pygame
 import sys
 import time
 import math
 import random as rand
 import requests
-import io
+import urllib.request as urlopen
+from io import BytesIO
 
 pygame.init()
 clock = pygame.time.Clock()
@@ -175,6 +177,55 @@ CHARACTERS = {
                'Defense': 90, 'Speed': 130, 'Experience': 220}
 }
 
+# new functions
+def message(message):
+    """Displays messages in game by creating objects"""
+    # Blit and Load: https: // waylonwalker.com / pygame - image - load /
+    # Fonts: https://nerdparadise.com/programming/pygame/part5
+
+    pygame.draw.rect(screen, white, (10, 400, 520, 140))
+    pygame.draw.rect(screen, black, (10, 400, 520, 140), 3)
+
+    font = pygame.font.SysFont("squaresans", 25)
+    text = font.render(message, True, black)
+
+    # creates rectangle
+    text_rect = text.get_rect()
+    text_rect.x = 30
+    text_rect.y = 410
+
+    # connecting the text with the rectangle as one object
+    screen.blit(text, text_rect)
+    # updates this portion of the screen
+    pygame.display.update()
+
+
+def create_button(x, y, width, height, text):
+    """Creates buttons that are highlighted when the cursor hovers over it"""
+    # create base button rectangle
+    button = pygame.Rect(x, y, width, height)
+
+    # position of the mouse
+    cursor_pos = pygame.mouse.get_pos()
+    cursor_hover = button.collidepoint(cursor_pos)
+
+    # makes outline of box gold if cursor is on it
+    if cursor_hover:
+        pygame.draw.rect(screen, white, button)
+        pygame.draw.rect(screen, gold, button, 3)
+    else:
+        pygame.draw.rect(screen, white, button)
+        pygame.draw.rect(screen, white, button, 3)
+
+    # adds text to the box after everything else
+    font = pygame.font.SysFont('squaresans', 18)
+    text = font.render(f'{text}', True, black)
+    text_rect = text.get_rect(center=button.center)
+    screen.blit(text, text_rect)
+
+    pygame.display.update()
+
+    return button
 
 class Pokemon(pygame.sprite.Sprite):
     def __init__(self, name, x, y):
@@ -189,6 +240,10 @@ class Pokemon(pygame.sprite.Sprite):
         self.Moves = CHARACTERS[name]['Moves']
         self.Level = 1
         self.Experience = 0
+
+        # setting up the json for the Pokémon API
+        data = requests.get(f'https://pokeapi.co/api/v2/pokemon/{name.lower()}')
+        self.json = data.json()
 
         # set sprites position
         self.x = x
@@ -225,11 +280,51 @@ class Pokemon(pygame.sprite.Sprite):
         damage = (((((2 * self.Level) / 5) + 2) * power * (self.Attack / opponent.Defense)) / 50) * modifier
         return damage
 
-    # new added function
+    # new function
     def use_attack(self, opponent, move):
         """Handles all of what happens when the user or opponent uses a move"""
+        if self.move_type(opponent, move) == 2:
+            message(f"{self.name} used {move} .... It was super effective!")
+        elif self.move_type(opponent, move) == 0.5:
+            message(f"{self.name} used {move} .... it wasn't very effective")
+        else:
+            message(f"{self.name} used {move.name}")
 
-        display_message()
+        time.sleep(1.5)
+
+        damage = self.calculate_damage(self, move)
+        opponent.HP -= damage
+
+    # new function(not working for some reason)
+    def set_sprite(self, orientation):
+        """Grab the image of the pixelated Pokémon from the Pokémon API"""
+        link = self.json['sprites'][orientation]
+        # https://www.daniweb.com/programming/software-development/code/493004/display-an-image-from-the-web-pygame
+        data = urllib.request.urlopen(link)
+        stream = data.read()
+
+        # Load the image into Pygame
+        self.image = pygame.image.load(BytesIO(stream))
+        # https: // www.pygame.org / docs / ref / image.html  # pygame.image.load
+        # need convert_alpha for the transparent pixels
+        #self.image = pygame.image.load(file).convert_alpha()
+
+        # alternative
+        # link = self.json['sprites'][orientation]
+        # response = requests.get(link)
+        # image_data = response.content
+
+        # scale the image
+        scale = self.size / self.image.get_width()
+        nwidth = self.image.get_width() * scale
+        nheight = self.image.get_height() * scale
+        self.image = pygame.transform.scale(self.image, (nwidth, nheight))
+
+
+
+
+
+
 
     def battle_priority(self, opponent):
         '''Determines whether you or the opponent attacks first'''
@@ -333,57 +428,6 @@ class Pokemon(pygame.sprite.Sprite):
             print(f"{opponent.name} fainted!")
             self.update_level(opponent)
             return "Win"
-
-
-# new functions
-def message(message):
-    """Displays messages in game by creating objects"""
-    # Blit and Load: https: // waylonwalker.com / pygame - image - load /
-    # Fonts: https://nerdparadise.com/programming/pygame/part5
-
-    pygame.draw.rect(screen, white, (10, 400, 520, 140))
-    pygame.draw.rect(screen, black, (10, 400, 520, 140), 3)
-
-    font = pygame.font.SysFont("squaresans", 25)
-    text = font.render(message, True, black)
-
-    # creates rectangle
-    text_rect = text.get_rect()
-    text_rect.x = 30
-    text_rect.y = 410
-
-    # connecting the text with the rectangle as one object
-    screen.blit(text, text_rect)
-    # updates this portion of the screen
-    pygame.display.update()
-
-
-def create_button(x, y, width, height, text):
-    """Creates buttons that are highlighted when the cursor hovers over it"""
-    # create base button rectangle
-    button = pygame.Rect(x, y, width, height)
-
-    # position of the mouse
-    cursor_pos = pygame.mouse.get_pos()
-    cursor_hover = button.collidepoint(cursor_pos)
-
-    # makes outline of box gold if cursor is on it
-    if cursor_hover:
-        pygame.draw.rect(screen, white, button)
-        pygame.draw.rect(screen, gold, button, 3)
-    else:
-        pygame.draw.rect(screen, white, button)
-        pygame.draw.rect(screen, white, button, 3)
-
-    # adds text to the box after everything else
-    font = pygame.font.SysFont('squaresans', 18)
-    text = font.render(f'{text}', True, black)
-    text_rect = text.get_rect(center=button.center)
-    screen.blit(text, text_rect)
-
-    pygame.display.update()
-
-    return button
 
 
 # Game Loop

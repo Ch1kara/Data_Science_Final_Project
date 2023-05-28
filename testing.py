@@ -1,5 +1,9 @@
 import pygame
 import sys
+from io import BytesIO
+import requests
+import urllib
+import urllib.request as urlopen
 
 black = (0, 0, 0)
 gold = (218, 165, 32)
@@ -8,6 +12,8 @@ green = (0, 200, 0)
 red = (200, 0, 0)
 white = (255, 255, 255)
 
+data = requests.get(f'https://pokeapi.co/api/v2/pokemon/squirtle')
+json = data.json()
 def create_button(x, y, width, height, text):
     """Creates buttons that are highlighted when the cursor hovers over it"""
     # create base button rectangle
@@ -56,6 +62,13 @@ def message(message):
     # updates this portion of the screen
     pygame.display.update()
 
+def set_sprite(self, orientation):
+    """Grab the image of the pixelated Pokémon from the Pokémon API"""
+    link = self.json['sprites'][orientation]
+    response = requests.get(link)
+    image_data = response.content
+    # Load the image into Pygame
+    self.image = pygame.image.load(BytesIO(image_data))
 
 # Example usage
 pygame.init()
@@ -66,7 +79,10 @@ while True:
         if event.type == pygame.QUIT:
             pygame.quit()
             sys.exit()
+
+
     create_button(100, 100, 200, 50, "Hype")
     message("Play again?")
+    set_sprite('back_default')
 
 
