@@ -344,7 +344,7 @@ def message(message):
     pygame.draw.rect(screen, white, (10, 400, 520, 140))
     pygame.draw.rect(screen, black, (10, 400, 520, 140), 3)
 
-    font = pygame.font.SysFont("squaresans", 20)
+    font = pygame.font.SysFont("squaresans", 25)
     text = font.render(message, True, black)
 
     # creates rectangle
