@@ -4,9 +4,6 @@ import sys
 import time
 import math
 import random as rand
-import requests
-import urllib.request as urlopen
-from io import BytesIO
 
 pygame.init()
 clock = pygame.time.Clock()
@@ -298,10 +295,10 @@ class Pokemon(pygame.sprite.Sprite):
     # new function(not working for some reason)
     def set_sprite(self, orientation):
         """Grab the image of the pixelated Pokémon from the Pokémon API"""
-        link = self.json['sprites'][orientation]
+        #link = self.json['sprites'][orientation]
         # https://www.daniweb.com/programming/software-development/code/493004/display-an-image-from-the-web-pygame
-        data = urllib.request.urlopen(link)
-        stream = data.read()
+        # data = urllib.request.urlopen(link)
+        # stream = data.read()
 
         # Load the image into Pygame
         self.image = pygame.image.load(f"images/{self.name}{orientation}.png")
@@ -309,7 +306,7 @@ class Pokemon(pygame.sprite.Sprite):
         # need convert_alpha for the transparent pixels
         #self.image = pygame.image.load(file).convert_alpha()
 
-        # alternative
+        # alternate
         # link = self.json['sprites'][orientation]
         # response = requests.get(link)
         # image_data = response.content
