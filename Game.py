@@ -309,7 +309,6 @@ class Pokemon(pygame.sprite.Sprite):
         self.image = pygame.transform.scale(self.image, (nwidth, nheight))
 
 
-
     def battle_priority(self, opponent):
         '''Determines whether you or the opponent attacks first'''
         if self.Speed > opponent.Speed:
@@ -421,6 +420,51 @@ class Pokemon(pygame.sprite.Sprite):
             self.update_level(opponent)
             return "Win"
 
+def main():
+    """Code that uses the above classes and functions to create a working game program"""
+    enemy = ai()
+    trainer = Pokemon(enemy)
+    p = Pokedex()
+    start = input("Choose your starter Pokemon: Bulbasaur(1), Charmander(2), or Squirtle(3)?")
+    if start == '1':
+        poke = "Bulbasaur"
+    elif start == '2':
+        poke = 'Charmander'
+    elif start == '3':
+        poke = 'Squirtle'
+    starter = Pokemon(poke)
+    starter.Level = 5
+    p.add_mon(starter)
+    print(f"You have chosen {starter} as your starter Pokemon!\n––––––––––")
+    T_HP = trainer.HP
+    S_HP = starter.HP
+    battle1 = starter.battle(trainer)
+    if battle1 == "Loss":
+        print("You lost, you are not cut out to be a pokemon master.")
+        p.mon_faint(starter)
+    elif battle1 == "Win":
+        trainer.HP = T_HP
+        starter.HP = S_HP
+        p.add_mon(trainer)
+    while p.checklen() > 0:
+        enemy = ai()
+        trainer = Pokemon(enemy)
+        T_HP = trainer.HP
+        poke_name = p.choose_fighter()
+        P_HP= poke_name.HP
+        battle = poke_name.battle(trainer)
+        if battle == "Loss":
+            p.mon_faint(poke_name)
+            print(p)
+            if p.checklen() == 0:
+                print("You lost on your way to becoming a pokemon master. Hopefully you are more fortunate in your future travels.")
+                break
+            else:
+                print("They got away.")
+        elif battle == "Win":
+            p.add_mon(trainer)
+            trainer.HP = T_HP
+            poke_name.HP = P_HP
 
 # Game Loop
 while True:
