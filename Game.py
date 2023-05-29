@@ -348,9 +348,6 @@ class Pokemon(pygame.sprite.Sprite):
         pygame.display.update()
 
 
-
-
-
     def update_level(self, opponent):
         '''Updates the experience and level of your pokemon after a battle'''
         old_level = self.Level
