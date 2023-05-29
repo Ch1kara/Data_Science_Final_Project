@@ -299,8 +299,9 @@ class Pokemon(pygame.sprite.Sprite):
     def set_sprite(self, orientation):
         """Grab the image of the pixelated Pokémon from the Pokémon API"""
         # Load the image into Pygame
-        # Need convert_alpha for the transparent pixels
-        self.image = pygame.image.load(f"images/{self.name.lower()}{orientation.lower()}.png").convert_alpha()
+        self.image = pygame.image.load(f"images/{self.name}{orientation}.png")
+        # https: // www.pygame.org / docs / ref / image.html  # pygame.image.load
+
         # scale the image
         scale = self.size / self.image.get_width()
         nwidth = self.image.get_width() * scale
