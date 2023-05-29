@@ -2,11 +2,8 @@ import urllib
 import pygame
 import sys
 import time
-import math
 import random as rand
 import requests
-import urllib.request as urlopen
-from io import BytesIO
 
 pygame.init()
 clock = pygame.time.Clock()
@@ -177,7 +174,7 @@ CHARACTERS = {
                'Defense': 90, 'Speed': 130, 'Experience': 220}
 }
 
-# new functions
+# new function
 def message(message):
     """Displays messages in game by creating objects"""
     # Blit and Load: https: // waylonwalker.com / pygame - image - load /
@@ -200,6 +197,7 @@ def message(message):
     pygame.display.update()
 
 
+# new function
 def create_button(x, y, width, height, text):
     """Creates buttons that are highlighted when the cursor hovers over it"""
     # create base button rectangle
@@ -233,6 +231,7 @@ class Pokemon(pygame.sprite.Sprite):
         self.name = name
         self.type_ = CHARACTERS[name]['Type']
         self.HP = CHARACTERS[name]['HP']
+        self.current_HP = CHARACTERS[name]['HP']
         self.Attack = CHARACTERS[name]['Attack']
         self.Defense = CHARACTERS[name]['Defense']
         self.Speed = CHARACTERS[name]['Speed']
@@ -280,6 +279,13 @@ class Pokemon(pygame.sprite.Sprite):
         damage = (((((2 * self.Level) / 5) + 2) * power * (self.Attack / opponent.Defense)) / 50) * modifier
         return damage
 
+    def take_damage(self, damage):
+        """Deals damage to a given pokemon"""
+        self.current_HP -= damage
+
+        if self.current_HP <= 0:
+            self.current_HP = 0
+
     # new function
     def use_attack(self, opponent, move):
         """Handles all of what happens when the user or opponent uses a move"""
@@ -293,7 +299,8 @@ class Pokemon(pygame.sprite.Sprite):
         time.sleep(1.5)
 
         damage = self.calculate_damage(self, move)
-        opponent.HP -= damage
+        damage = int(damage)
+        opponent.take_damage(damage)
 
     # new function(not working for some reason)
     def set_sprite(self, orientation):
@@ -316,6 +323,7 @@ class Pokemon(pygame.sprite.Sprite):
         else:
             return False
 
+    # new function
     def move_buttons(self):
         """Creates the 3-4 move buttons for a Pokémon"""
         posx = [250,750,250,750]
@@ -325,6 +333,7 @@ class Pokemon(pygame.sprite.Sprite):
             create_button(posx[counter], posx[counter], 450, 175, str(move)) #Make 3 to 4 buttons for moves
             counter += 1
 
+    # new function
     def starter_buttons(self):
         """Creates the three pokemon starter buttons"""
 
@@ -342,12 +351,40 @@ class Pokemon(pygame.sprite.Sprite):
         '''Makes the opponent use a random move each turn'''
         return rand.choice(CHARACTERS[opponent.name]['Moves'])
 
+    # new function
     def paint(self, trans = 255):
-        '''Actually puts the image in the game, as well as covering transparency'''
+        """Actually puts the image in the game, as well as covering transparency"""
         sprite = self.image.copy()
-        details = (255, 255, 255,trans) #Gets image color and transparency values
-        sprite.fill(details, None, pygame.BLEND_RGBA_MULT) #None selects entire image, BLEND_RBGA makes image transparent
-        game.blit(sprite, (self.x, self.y)) #Blit puts image in game, position puts where in game
+        details = (255, 255, 255,trans) # Gets image color and transparency values
+        sprite.fill(details, None, pygame.BLEND_RGBA_MULT) # None selects image, BLEND_RBGA makes image transparent
+        game.blit(sprite, (self.x, self.y)) # Blit puts image in game, position puts where in game
+
+    # added function
+    def hp_bar(self):
+        """Draws the HP bar and the text showing how much HP the Pokémon has"""
+        # makes two bars and reveals the red one when the green gets smaller
+        scale = 200 // self.HP
+        bar = pygame.Surface((self.HP * scale, 20))
+        bar.fill(red)
+        current_bar = pygame.Surface((self.current_HP * scale, 20))
+        current_bar.fill(green)
+
+        # display HP text
+        font = pygame.font.SysFont('squaresans', 25)
+        text = font.render(f"HP: {self.current_HP} / {self.HP}", True, black)
+
+        # makes bar pygame objects and positions them with text
+        # self.bar_x and self.bar_y are defined in the game loop
+        text_rect = text.get_rect(topleft=(self.bar_x, self.bar_y+30))
+        bar_rect = bar.get_rect(topleft=(self.bar_x, self.bar_y))
+        current_bar_rect = current_bar.get_rect(topleft=(self.bar_x, self.bar_y))
+
+        # draws bars into the actual game
+        screen.blit(bar, bar_rect)
+        screen.blit(current_bar, current_bar_rect)
+        screen.blit(text, text_rect)
+
+
 
 
     def battle(self, opponent):
