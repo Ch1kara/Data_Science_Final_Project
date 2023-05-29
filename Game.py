@@ -317,13 +317,17 @@ class Pokemon(pygame.sprite.Sprite):
             return False
 
     def move_buttons(self):
-        '''Allows you to choose a move from the user pokemon's moveset'''
+        """Creates the 3-4 move buttons for a Pokémon"""
         posx = [250,750,250,750]
         posy = [94,94,281,281]
         counter = 0
         for move in self.Moves:
             create_button(posx[counter], posx[counter], 450, 175, str(move)) #Make 3 to 4 buttons for moves
             counter += 1
+
+    def starter_buttons(self):
+        """Creates the three pokemon starter buttons"""
+
 
     def update_level(self, opponent):
         '''Updates the experience and level of your pokemon after a battle'''
@@ -469,7 +473,8 @@ while True:
             sys.exit()
 
     #Start game code here
-
+    game_status = 'select starter'
+    starter_buttons()
     screen.fill(white)
 
     # display.flip() should be at the end
