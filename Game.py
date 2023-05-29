@@ -333,9 +333,22 @@ class Pokemon(pygame.sprite.Sprite):
             create_button(posx[counter], posx[counter], 450, 175, str(move)) #Make 3 to 4 buttons for moves
             counter += 1
 
-    # new function
+    # new function / still needs some work
     def starter_buttons(self):
         """Creates the three pokemon starter buttons"""
+        starter_pokemons = ["bulbasaur", "squirtle", "charmander"]
+        game.fill(white) #White background
+        bulbasaur.paint()
+        squirtle.paint()
+        charmander.paint() #Paint starter pokemon on screen
+        location = pygame.mouse.get_pos() #Where cursor is on screen
+        for pokemon in starter_pokemons:
+            if pokemon.get_rect().collidepoint(location): #If cursor where pokemon is then screen change
+                pygame.paint.rect(game, black, pokemon.get_rect(),2)
+        pygame.display.update()
+
+
+
 
 
     def update_level(self, opponent):
