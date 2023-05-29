@@ -304,7 +304,7 @@ class Pokemon(pygame.sprite.Sprite):
         stream = data.read()
 
         # Load the image into Pygame
-        self.image = pygame.image.load(BytesIO(stream))
+        self.image = pygame.image.load(f"images/{self.name}{orientation}.png")
         # https: // www.pygame.org / docs / ref / image.html  # pygame.image.load
         # need convert_alpha for the transparent pixels
         #self.image = pygame.image.load(file).convert_alpha()
