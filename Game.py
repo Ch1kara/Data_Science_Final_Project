@@ -298,22 +298,9 @@ class Pokemon(pygame.sprite.Sprite):
     # new function(not working for some reason)
     def set_sprite(self, orientation):
         """Grab the image of the pixelated Pokémon from the Pokémon API"""
-        link = self.json['sprites'][orientation]
-        # https://www.daniweb.com/programming/software-development/code/493004/display-an-image-from-the-web-pygame
-        data = urllib.request.urlopen(link)
-        stream = data.read()
-
         # Load the image into Pygame
-        self.image = pygame.image.load(f"images/{self.name}{orientation}.png")
-        # https: // www.pygame.org / docs / ref / image.html  # pygame.image.load
-        # need convert_alpha for the transparent pixels
-        #self.image = pygame.image.load(file).convert_alpha()
-
-        # alternative
-        # link = self.json['sprites'][orientation]
-        # response = requests.get(link)
-        # image_data = response.content
-
+        # Need convert_alpha for the transparent pixels
+        self.image = pygame.image.load(f"images/{self.name.lower()}{orientation.lower()}.png").convert_alpha()
         # scale the image
         scale = self.size / self.image.get_width()
         nwidth = self.image.get_width() * scale
@@ -355,6 +342,9 @@ class Pokemon(pygame.sprite.Sprite):
     def opp_move(self, opponent):
         '''Makes the opponent use a random move each turn'''
         return rand.choice(CHARACTERS[opponent.name]['Moves'])
+
+    def paint(self, alpha = 255):
+
 
     def battle(self, opponent):
         '''Runs the fight between two pokemon'''
@@ -437,6 +427,8 @@ while True:
         if event.type == pygame.QUIT:
             pygame.quit()
             sys.exit()
+
+    #Start game code here
 
     screen.fill(white)
 
