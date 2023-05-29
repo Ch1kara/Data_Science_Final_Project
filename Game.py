@@ -316,15 +316,14 @@ class Pokemon(pygame.sprite.Sprite):
         else:
             return False
 
-    def choose_move(self):
+    def move_buttons(self):
         '''Allows you to choose a move from the user pokemon's moveset'''
-        print(f'Here are the moves:')
-        counter = 1
+        posx = [250,750,250,750]
+        posy = [94,94,281,281]
+        counter = 0
         for move in self.Moves:
-            print(f'{move} ({counter})')
+            create_button(posx[counter], posx[counter], 450, 175, str(move)) #Make 3 to 4 buttons for moves
             counter += 1
-        select = int(input('Choose your move(number): '))
-        return MOVES_DICTIONARY[self.Moves[select - 1]]['name']
 
     def update_level(self, opponent):
         '''Updates the experience and level of your pokemon after a battle'''
@@ -349,20 +348,15 @@ class Pokemon(pygame.sprite.Sprite):
 
     def battle(self, opponent):
         '''Runs the fight between two pokemon'''
-        print(f"A trainer appears ... {opponent.name} wants to fight!")
+        message(f"A trainer appears ... {opponent.name} wants to fight!")
         # add the "run" away possibility here, at least I'm pretty sure this is where you'll add it
-        run = input("Would you like to run? Yes or no?")
-        if run == "yes":
-            print("You cannot run from a trainer battle ....\n––––––––––")
         priority = self.battle_priority(opponent)
-        print(f"Your {self.name}'s health: {self.HP}HP")
-        print(f"Opponent's {opponent.name}'s health: {opponent.HP}HP\n")
-        print('––––––––––')
+        #Show HP Bars if they aren't shown already
         while self.HP > 0 and opponent.HP > 0:
             if priority:  # if the player moves first
-                print('Your turn:')
-                print(f"What will {self.name} do?\n")
-                move = self.choose_move()
+                message('Your turn:')
+                message(f"What will {self.name} do?\n")
+                move_buttons()
                 dmg = self.calculate_damage(opponent, move)
                 opponent.HP -= dmg
                 if self.move_type(opponent,
