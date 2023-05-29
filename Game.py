@@ -338,13 +338,18 @@ class Pokemon(pygame.sprite.Sprite):
         """Creates the three pokemon starter buttons"""
         starter_pokemons = ["bulbasaur", "squirtle", "charmander"]
         screen.fill(white) #White background
-        Pokemon('bulbasaur').paint()
-        Pokemon('squirtle').paint()
-        Pokemon('charmander').paint() #Paint starter pokemon on screen
+        bulbasaur = Pokemon("Bulbasaur", 50, 225)#Makes pokemon into pokemon class so program can grab image
+        squirtle = Pokemon('Squirtle', 350, 225)
+        charmander = Pokemon("Charmander", 650, 225)
+        charmander.paint() #Paint starter pokemon on screen
+        squirtle.paint()
+        bulbasaur.paint()
+
         location = pygame.mouse.get_pos() #Where cursor is on screen
         for pokemon in starter_pokemons:
             if pokemon.get_rect().collidepoint(location): #If cursor where pokemon is then screen change
-                pygame.paint.rect(game, black, pokemon.get_rect(),2)
+                pygame.paint.rect(screen, black, pokemon.get_rect(), 2)
+
         pygame.display.update()
 
 
