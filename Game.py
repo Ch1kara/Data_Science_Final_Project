@@ -394,7 +394,22 @@ class Pokemon(pygame.sprite.Sprite):
         screen.blit(current_bar, current_bar_rect)
         screen.blit(text, text_rect)
 
+        # new function
+        def xp_text(self):
+            """Draws xp text next to the health bars"""
+            # finds the max xp for the given level
+            xp = 1
+            for i in range(1000):
+                level = self.Level + 1
+                level = int(xp ** (1 / 3))
+                if level > self.Level:
+                    break
+                xp += 1
 
+            font = pygame.font.SysFont('sqaresans', 25)
+            text = font.render(f"Lvl {self.Level}: {self.Experience} / {xp}", True, black)
+            text_rect = text.get_rect(topleft=(self.hp_x + 120, self.hp_y + 30))
+            screen.blit(text, text_rect)
 
 
     def battle(self, opponent):
