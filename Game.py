@@ -310,10 +310,6 @@ class Pokemon(pygame.sprite.Sprite):
 
 
 
-
-
-
-
     def battle_priority(self, opponent):
         '''Determines whether you or the opponent attacks first'''
         if self.Speed > opponent.Speed:
@@ -344,7 +340,12 @@ class Pokemon(pygame.sprite.Sprite):
         '''Makes the opponent use a random move each turn'''
         return rand.choice(CHARACTERS[opponent.name]['Moves'])
 
-    def paint(self, alpha = 255):
+    def paint(self, trans = 255):
+        '''Actually puts the image in the game, as well as covering transparency'''
+        sprite = self.image.copy()
+        details = (255, 255, 255,trans) #Gets image color and transparency values
+        sprite.fill(details, None, pygame.BLEND_RGBA_MULT) #None selects entire image, BLEND_RBGA makes image transparent
+        game.blit(sprite, (self.x, self.y)) #Blit puts image in game, position puts where in game
 
 
     def battle(self, opponent):
