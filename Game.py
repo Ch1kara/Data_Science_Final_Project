@@ -225,6 +225,12 @@ def create_button(x, y, width, height, text):
 
     return button
 
+def ai():
+    '''Creates a trainer that chooses a random pokemon to battle you'''
+    pokemonz =['Pikachu','Charizard','Squirtle','Jigglypuff','Gengar','Magnemite','Bulbasaur','Charmander','Beedrill','Golem','Dewgong','Hypno','Cleffa','Cutiefly','Mewtwo']
+    opponent = rand.choice(pokemonz)
+    return opponent
+
 class Pokemon(pygame.sprite.Sprite):
     def __init__(self, name, x, y):
         pygame.sprite.Sprite.__init__(self)
@@ -337,18 +343,21 @@ class Pokemon(pygame.sprite.Sprite):
     def paint(self, trans = 255):
         """Actually puts the image in the game, as well as covering transparency"""
         sprite = self.image.copy()
-        details = (255, 255, 255,trans) # Gets image color and transparency values
+        details = (255, 255, 255, trans) # Gets image color and transparency values
         sprite.fill(details, None, pygame.BLEND_RGBA_MULT) # None selects image, BLEND_RBGA makes image transparent
-        game.blit(sprite, (self.x, self.y)) # Blit puts image in game, position puts where in game
+        screen.blit(sprite, (self.x, self.y)) # Blit puts image in game, position puts where in game
 
+    def get_rect(self):
+        """Creates a rectangle object around the displayed image"""
+        return pygame.Rect(self.x, self.y, self.image.get_width(), self.image.get_height())
     # new function / still needs some work
     def starter_buttons(self):
         """Creates the three pokemon starter buttons"""
-        starter_pokemons = ["bulbasaur", "squirtle", "charmander"]
         screen.fill(white) # White background
-        bulbasaur = Pokemon("Bulbasaur", 50, 225) # Makes pokemon into pokemon class so program can grab image
+        bulbasaur = Pokemon("Bulbasaur", 50, 225) # Makes Pokémon into Pokémon class so program can grab image
         squirtle = Pokemon('Squirtle', 350, 225)
         charmander = Pokemon("Charmander", 650, 225)
+        starter_pokemons = [bulbasaur, squirtle, charmander]
         charmander.paint() # Paint starter pokemon on screen
         squirtle.paint()
         bulbasaur.paint()
@@ -485,6 +494,7 @@ class Pokemon(pygame.sprite.Sprite):
             self.update_level(opponent)
             return "Win"
 
+
 def main():
     """Code that uses the above classes and functions to create a working game program"""
     enemy = ai()
@@ -540,14 +550,12 @@ while status != 'quit':
             status = 'quit'
             pygame.quit()
             sys.exit()
-
-
-    #Start game code here
+    # Start game code here
     game_status = 'select starter'
     starter_buttons()
     screen.fill(white)
 
-    #need to define code for the
+    # Define location of top left corner of hp bar (names: self.bar_x, self.bar_y)
 
     # display.flip() should be at the end
     pygame.display.flip()
