@@ -9,8 +9,8 @@ pygame.init()
 clock = pygame.time.Clock()
 
 # screen size and title at the top
-screen_width = 800
-screen_height = 600
+screen_width = 1000
+screen_height = 750
 screen = pygame.display.set_mode((screen_width, screen_height))
 pygame.display.set_caption("Pokemon Game Adaptation")
 
@@ -199,7 +199,7 @@ def message(message):
 
 # new function
 def create_button(x, y, width, height, text):
-    """Creates buttons that are highlighted when the cursor hovers over it"""
+    """Creates button rectangle that is highlighted when cursor hovers over it"""
     # create base button rectangle
     button = pygame.Rect(x, y, width, height)
 
@@ -309,7 +309,7 @@ class Pokemon(pygame.sprite.Sprite):
         self.image = pygame.image.load(f"images/{self.name}{orientation}.png")
         # https: // www.pygame.org / docs / ref / image.html  # pygame.image.load
 
-        # scale the image
+        # scales the image
         scale = self.size / self.image.get_width()
         nwidth = self.image.get_width() * scale
         nheight = self.image.get_height() * scale
@@ -330,24 +330,32 @@ class Pokemon(pygame.sprite.Sprite):
         posy = [94,94,281,281]
         counter = 0
         for move in self.Moves:
-            create_button(posx[counter], posx[counter], 450, 175, str(move)) #Make 3 to 4 buttons for moves
+            create_button(posx[counter], posx[counter], 450, 175, str(move)) # Make 3 to 4 buttons for moves
             counter += 1
+
+    # new function
+    def paint(self, trans = 255):
+        """Actually puts the image in the game, as well as covering transparency"""
+        sprite = self.image.copy()
+        details = (255, 255, 255,trans) # Gets image color and transparency values
+        sprite.fill(details, None, pygame.BLEND_RGBA_MULT) # None selects image, BLEND_RBGA makes image transparent
+        game.blit(sprite, (self.x, self.y)) # Blit puts image in game, position puts where in game
 
     # new function / still needs some work
     def starter_buttons(self):
         """Creates the three pokemon starter buttons"""
         starter_pokemons = ["bulbasaur", "squirtle", "charmander"]
-        screen.fill(white) #White background
-        bulbasaur = Pokemon("Bulbasaur", 50, 225)#Makes pokemon into pokemon class so program can grab image
+        screen.fill(white) # White background
+        bulbasaur = Pokemon("Bulbasaur", 50, 225) # Makes pokemon into pokemon class so program can grab image
         squirtle = Pokemon('Squirtle', 350, 225)
         charmander = Pokemon("Charmander", 650, 225)
-        charmander.paint() #Paint starter pokemon on screen
+        charmander.paint() # Paint starter pokemon on screen
         squirtle.paint()
         bulbasaur.paint()
 
-        location = pygame.mouse.get_pos() #Where cursor is on screen
+        location = pygame.mouse.get_pos() # Where cursor is on screen
         for pokemon in starter_pokemons:
-            if pokemon.get_rect().collidepoint(location): #If cursor where pokemon is then screen change
+            if pokemon.get_rect().collidepoint(location): # If cursor where pokemon is then screen change
                 pygame.paint.rect(screen, black, pokemon.get_rect(), 2)
 
         pygame.display.update()
@@ -367,14 +375,6 @@ class Pokemon(pygame.sprite.Sprite):
         return rand.choice(CHARACTERS[opponent.name]['Moves'])
 
     # new function
-    def paint(self, trans = 255):
-        """Actually puts the image in the game, as well as covering transparency"""
-        sprite = self.image.copy()
-        details = (255, 255, 255,trans) # Gets image color and transparency values
-        sprite.fill(details, None, pygame.BLEND_RGBA_MULT) # None selects image, BLEND_RBGA makes image transparent
-        game.blit(sprite, (self.x, self.y)) # Blit puts image in game, position puts where in game
-
-    # added function
     def hp_bar(self):
         """Draws the HP bar and the text showing how much HP the Pokémon has"""
         # makes two bars and reveals the red one when the green gets smaller
@@ -400,21 +400,21 @@ class Pokemon(pygame.sprite.Sprite):
         screen.blit(text, text_rect)
 
         # new function
-        def xp_text(self):
-            """Draws xp text next to the health bars"""
-            # finds the max xp for the given level
-            xp = 1
-            for i in range(1000):
-                level = self.Level + 1
-                level = int(xp ** (1 / 3))
-                if level > self.Level:
-                    break
-                xp += 1
+    def xp_text(self):
+        """Draws xp text next to the health bars"""
+        # finds the max xp for the given level
+        xp = 1
+        for i in range(1000):
+            level = self.Level + 1
+            level = int(xp ** (1 / 3))
+            if level > self.Level:
+                break
+            xp += 1
 
-            font = pygame.font.SysFont('sqaresans', 25)
-            text = font.render(f"Lvl {self.Level}: {self.Experience} / {xp}", True, black)
-            text_rect = text.get_rect(topleft=(self.hp_x + 120, self.hp_y + 30))
-            screen.blit(text, text_rect)
+        font = pygame.font.SysFont('sqaresans', 25)
+        text = font.render(f"Lvl {self.Level}: {self.Experience} / {xp}", True, black)
+        text_rect = text.get_rect(topleft=(self.hp_x + 120, self.hp_y + 30))
+        screen.blit(text, text_rect)
 
 
     def battle(self, opponent):
@@ -532,17 +532,22 @@ def main():
             poke_name.HP = P_HP
 
 # Game Loop
-while True:
+status = 'starter'
+while status != 'quit':
     # Should be at the start, quits game if red x at top of screen is hit
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
+            status = 'quit'
             pygame.quit()
             sys.exit()
+
 
     #Start game code here
     game_status = 'select starter'
     starter_buttons()
     screen.fill(white)
+
+    #need to define code for the
 
     # display.flip() should be at the end
     pygame.display.flip()
