@@ -1,5 +1,6 @@
 import urllib
 import pygame
+from pygame.locals import *
 import sys
 import time
 import random as rand
@@ -350,25 +351,6 @@ class Pokemon(pygame.sprite.Sprite):
     def get_rect(self):
         """Creates a rectangle object around the displayed image"""
         return pygame.Rect(self.x, self.y, self.image.get_width(), self.image.get_height())
-    # new function / still needs some work
-    def starter_buttons(self):
-        """Creates the three pokemon starter buttons"""
-        screen.fill(white) # White background
-        bulbasaur = Pokemon("Bulbasaur", 50, 225) # Makes Pokémon into Pokémon class so program can grab image
-        squirtle = Pokemon('Squirtle', 350, 225)
-        charmander = Pokemon("Charmander", 650, 225)
-        starter_pokemons = [bulbasaur, squirtle, charmander]
-        charmander.paint() # Paint starter pokemon on screen
-        squirtle.paint()
-        bulbasaur.paint()
-
-        location = pygame.mouse.get_pos() # Where cursor is on screen
-        for pokemon in starter_pokemons:
-            if pokemon.get_rect().collidepoint(location): # If cursor where pokemon is then screen change
-                pygame.paint.rect(screen, black, pokemon.get_rect(), 2)
-
-        pygame.display.update()
-
 
     def update_level(self, opponent):
         '''Updates the experience and level of your pokemon after a battle'''
@@ -399,9 +381,9 @@ class Pokemon(pygame.sprite.Sprite):
 
         # makes bar pygame objects and positions them with text
         # self.bar_x and self.bar_y are defined in the game loop
-        text_rect = text.get_rect(topleft=(self.bar_x, self.bar_y+30))
-        bar_rect = bar.get_rect(topleft=(self.bar_x, self.bar_y))
-        current_bar_rect = current_bar.get_rect(topleft=(self.bar_x, self.bar_y))
+        text_rect = text.get_rect(topleft=(self.hp_x, self.hp_y+30))
+        bar_rect = bar.get_rect(topleft=(self.hp_x, self.hp_y))
+        current_bar_rect = current_bar.get_rect(topleft=(self.hp_x, self.hp_y))
 
         # draws bars into the actual game
         screen.blit(bar, bar_rect)
@@ -544,18 +526,51 @@ def main():
 # Game Loop
 status = 'starter'
 while status != 'quit':
+    bulbasaur = Pokemon("Bulbasaur", 50, 225)  # Makes Pokémon into Pokémon class object
+    squirtle = Pokemon('Squirtle', 350, 225)
+    charmander = Pokemon("Charmander", 650, 225)
+    starter_pokemons = [bulbasaur, squirtle, charmander]
+
     # Should be at the start, quits game if red x at top of screen is hit
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             status = 'quit'
             pygame.quit()
             sys.exit()
-    # Start game code here
-    game_status = 'select starter'
-    starter_buttons()
-    screen.fill(white)
+        # needs to be in this for loop because this is where all game events are handled(ie mouse clicks)
+        if status == 'starter':
+            if event.type == MOUSEBUTTONDOWN:
+                click_loc = event.pos
+                for i in range(len(starter_pokemons)):
+                    if starter_pokemons[i].get_rect().collidepoint(click_loc):
+                        player = starter_pokemons[i]
+                        # enemy trainer
+                        enemy = ai()
+                        trainer = Pokemon(enemy)
 
-    # Define location of top left corner of hp bar (names: self.bar_x, self.bar_y)
+                        player.hp_x = 275
+                        player.hp_y = 250
+                        trainer.hp_x = 50
+                        trainer.hp_y = 50
+
+                        status = 'prebattle'
+
+    # Start game code here
+    if status == 'starter':
+        screen.fill(white)  # White background
+        charmander.paint()  # Paint starter pokemon on screen
+        squirtle.paint()
+        bulbasaur.paint()
+
+        location = pygame.mouse.get_pos()  # Where cursor is on screen
+        for pokemon in starter_pokemons:
+            if pokemon.get_rect().collidepoint(location):  # If cursor where pokemon is then screen change
+                pygame.draw.rect(screen, black, pokemon.get_rect(), 2)
+
+        pygame.display.update()
+
+
+    # Define location of top left corner of hp bar (names: self.hp_x, self.hp_y)
 
     # display.flip() should be at the end
     pygame.display.flip()
