@@ -492,10 +492,6 @@ battle_poke = None
 pokedex = Pokedex()
 status = 'starter'
 while status != 'quit':
-    bulbasaur = Pokemon("Bulbasaur", 50, 225)  # Makes Pokémon into Pokémon class object
-    squirtle = Pokemon('Squirtle', 350, 225)
-    charmander = Pokemon("Charmander", 650, 225)
-
     # Should be at the start, quits game if red x at top of screen is hit
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -504,6 +500,11 @@ while status != 'quit':
             sys.exit()
         # needs to be in this for loop because this is where all game events are handled(ie mouse clicks)
         if status == 'starter':
+            # Makes Pokémon into Pokémon class object
+            bulbasaur = Pokemon("Bulbasaur", 50, 225)
+            squirtle = Pokemon('Squirtle', 350, 225)
+            charmander = Pokemon("Charmander", 650, 225)
+            #Sets starter to none because they haven't chosen a starter yet
             starter = None
             starter1 = ImageButton(100,200, bulbasaur.set_sprite("front"), 1, "bulbasaur") #Making the buttons
             starter2 = ImageButton(300, 200, charmander.set_sprite("front"), 1, "charmander")
@@ -533,8 +534,8 @@ while status != 'quit':
                 trainer.hp_x = 50
                 trainer.hp_y = 50
 
-                status = 'battle start'
-        if status == 'battle start':
+                status = 'pre battle'
+        if status == 'pre battle':
             # select Pokémon buttons appear
             pokedex.select_poke()
             if event.type == MOUSEBUTTONDOWN:
@@ -546,7 +547,7 @@ while status != 'quit':
                     if poke.collidepoint(click_loc):
                         battle_poke = pokedex.party[i]
 
-    if status == 'battle start':
+    if status == 'pre battle':
         screen.fill(white)
         pygame.display.update()
 
