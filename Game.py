@@ -227,14 +227,14 @@ def create_button(x, y, width, height, text):
     return button
 
 class ImageButton():
-    def __init__(self, x, y, image, scale):
+    def __init__(self, x, y, image, scale, value):
         width = image.get_width()
         height = image.get_height()
         self.image = pygame.transform.scale(image, (int(width * scale), int(height*scale)))
         self.rect = self.image.get_rect()
         self.rect.topleft = (x,y)
         self.clicked = False
-        self.size = 150
+        self.value = value
 
     def draw(self):
         """Draws the button on the screen"""
@@ -244,7 +244,7 @@ class ImageButton():
         if self.rect.collidepoint(pos):
             if pygame.mouse.get_pressed()[0] == 1 and self.clicked == False:
                 self.clicked = True
-                print("Click")
+                return self.value
 
         if pygame.mouse.get_pressed()[0] == 0:
             self.clicked = False
@@ -495,7 +495,6 @@ while status != 'quit':
     bulbasaur = Pokemon("Bulbasaur", 50, 225)  # Makes Pokémon into Pokémon class object
     squirtle = Pokemon('Squirtle', 350, 225)
     charmander = Pokemon("Charmander", 650, 225)
-    starter_pokemons = [bulbasaur, squirtle, charmander]
 
     # Should be at the start, quits game if red x at top of screen is hit
     for event in pygame.event.get():
@@ -505,23 +504,36 @@ while status != 'quit':
             sys.exit()
         # needs to be in this for loop because this is where all game events are handled(ie mouse clicks)
         if status == 'starter':
-            if event.type == MOUSEBUTTONDOWN:
-                click_loc = event.pos
-                for i in range(len(starter_pokemons)):
-                    if starter_pokemons[i].get_rect().collidepoint(click_loc):
-                        starter = starter_pokemons[i]
-                        starter.Level = 5
-                        pokedex.add_mon(starter)
-                        # enemy trainer
-                        enemy = ai()
-                        trainer = Pokemon(enemy, 250, -50)
+            starter = None
+            starter1 = ImageButton(100,200, bulbasaur.set_sprite("front"), 1, "bulbasaur") #Making the buttons
+            starter2 = ImageButton(300, 200, charmander.set_sprite("front"), 1, "charmander")
+            starter3 = ImageButton(500, 200, squirtle.set_sprite("front"), 1, "squirtle")
+            starter1.draw() #Drawing the buttons on the screen
+            starter2.draw()
+            starter3.draw()
 
-                        starter.hp_x = 275
-                        starter.hp_y = 250
-                        trainer.hp_x = 50
-                        trainer.hp_y = 50
+            #Checking if player picked a starter
+            if starter1 == "bulbasaur":
+                starter = bulbasaur
+            elif starter2 == "charmander":
+                starter = charmander
+            elif starter3 == "squirtle":
+                starter = squirtle
 
-                        status = 'battle start'
+            #Need to see if a starter is selected before moving on to the next stage.
+            if starter != None:
+                starter.Level = 5
+                pokedex.add_mon(starter)
+                # enemy trainer
+                enemy = ai()
+                trainer = Pokemon(enemy, 250, -50)
+
+                starter.hp_x = 275
+                starter.hp_y = 250
+                trainer.hp_x = 50
+                trainer.hp_y = 50
+
+                status = 'battle start'
         if status == 'battle start':
             # select Pokémon buttons appear
             pokedex.select_poke()
@@ -533,22 +545,6 @@ while status != 'quit':
 
                     if poke.collidepoint(click_loc):
                         battle_poke = pokedex.party[i]
-
-
-
-
-    if status == 'starter':
-        screen.fill(white)  # White background
-        charmander.paint()  # Paint starter pokemon on screen
-        squirtle.paint()
-        bulbasaur.paint()
-
-        location = pygame.mouse.get_pos()  # Where cursor is on screen
-        for pokemon in starter_pokemons:
-            if pokemon.get_rect().collidepoint(location):  # If cursor where pokemon is then screen change
-                pygame.draw.rect(screen, black, pokemon.get_rect(), 2)
-
-        pygame.display.update()
 
     if status == 'battle start':
         screen.fill(white)
