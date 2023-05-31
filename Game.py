@@ -436,6 +436,7 @@ class Pokedex:
         """Returns the length of the party"""
         return len(self.party)
 
+    # new function
     def select_poke(self):
         """Creates buttons to select which Pokémon you want to battle with"""
         posx = [20,340,660,20,340,660]
