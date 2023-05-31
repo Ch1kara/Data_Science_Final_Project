@@ -180,9 +180,9 @@ def message(message):
     """Displays messages in game by creating objects"""
     # Blit and Load: https: // waylonwalker.com / pygame - image - load /
     # Fonts: https://nerdparadise.com/programming/pygame/part5
-
-    pygame.draw.rect(screen, white, (10, 400, 520, 140))
-    pygame.draw.rect(screen, black, (10, 400, 520, 140), 3)
+    #10, 350, 480, 140
+    pygame.draw.rect(screen, white, (10, 525, 980, 210))
+    pygame.draw.rect(screen, black, (10, 525, 980, 210), 3)
 
     font = pygame.font.SysFont("squaresans", 25)
     text = font.render(message, True, black)
@@ -190,7 +190,7 @@ def message(message):
     # creates rectangle
     text_rect = text.get_rect()
     text_rect.x = 30
-    text_rect.y = 410
+    text_rect.y = 645
 
     # connecting the text with the rectangle as one object
     screen.blit(text, text_rect)
@@ -217,7 +217,7 @@ def create_button(x, y, width, height, text):
         pygame.draw.rect(screen, white, button, 3)
 
     # adds text to the box after everything else
-    font = pygame.font.SysFont('squaresans', 18)
+    font = pygame.font.SysFont('squaresans', 25)
     text = font.render(f'{text}', True, black)
     text_rect = text.get_rect(center=button.center)
     screen.blit(text, text_rect)
@@ -309,7 +309,7 @@ class Pokemon(pygame.sprite.Sprite):
         damage = int(damage)
         opponent.take_damage(damage)
 
-    # new function(not working for some reason)
+    # new function
     def set_sprite(self, orientation):
         """Grab the image of the pixelated Pokémon from the Pokémon API"""
         # Load the image into Pygame
@@ -336,9 +336,12 @@ class Pokemon(pygame.sprite.Sprite):
         posx = [250,750,250,750]
         posy = [94,94,281,281]
         counter = 0
+        move_buttons = []
         for move in self.Moves:
-            create_button(posx[counter], posx[counter], 450, 175, str(move)) # Make 3 to 4 buttons for moves
+            button = create_button(posx[counter], posy[counter], 450, 175, str(move)) # Make 3 to 4 buttons for moves
+            move_buttons.append(button)
             counter += 1
+        return move_buttons
 
     # new function
     def paint(self, trans = 255):
@@ -348,6 +351,7 @@ class Pokemon(pygame.sprite.Sprite):
         sprite.fill(details, None, pygame.BLEND_RGBA_MULT) # None selects image, BLEND_RBGA makes image transparent
         screen.blit(sprite, (self.x, self.y)) # Blit puts image in game, position puts where in game
 
+    #new function
     def get_rect(self):
         """Creates a rectangle object around the displayed image"""
         return pygame.Rect(self.x, self.y, self.image.get_width(), self.image.get_height())
@@ -407,123 +411,55 @@ class Pokemon(pygame.sprite.Sprite):
         text_rect = text.get_rect(topleft=(self.hp_x + 120, self.hp_y + 30))
         screen.blit(text, text_rect)
 
+class Pokedex:
+    def __init__(self):
+        """Initializes the attributes for the Pokedex Class"""
+        self.party = []
+    def add_mon(self,mon):
+        """Adds a pokemon to your pokedex/party"""
+        self.party.append(mon)
+    def mon_faint(self,mon):
+        """Removes a pokemon from your pokedex/party when it faints"""
+        self.party.remove(mon)
+    def choose_fighter(self):
+        """Choose which one of your pokemon you want to fight with"""
+        print(f"Your current party: {self.party}")
+        fighter = int(input("Choose your Pokemon for the next battle!(number): "))
+        choice = self.party[fighter-1]
+        print(f"You chose {choice}!")
+        return choice
+    def checklen(self):
+        """Returns the length of the party"""
+        return len(self.party)
 
-    def battle(self, opponent):
-        '''Runs the fight between two pokemon'''
-        message(f"A trainer appears ... {opponent.name} wants to fight!")
-        # add the "run" away possibility here, at least I'm pretty sure this is where you'll add it
-        priority = self.battle_priority(opponent)
-        #Show HP Bars if they aren't shown already
-        while self.HP > 0 and opponent.HP > 0:
-            if priority:  # if the player moves first
-                message('Your turn:')
-                message(f"What will {self.name} do?\n")
-                move_buttons()
-                dmg = self.calculate_damage(opponent, move)
-                opponent.HP -= dmg
-                if self.move_type(opponent,
-                                  move) == 2:  # Changes based on whether the move was super effective, effective, or not very effective
-                    print(
-                        f'{self.name} used {move} .... It was super effective! Your Pokemon dealt {dmg:.2f} to {opponent.name}')
-                    print(f'Your {self.name}: {self.HP:.2f}HP')
-                    print(f"Opponent's {opponent.name}: {opponent.HP:.2f}HP")
-                    print('––––––––––')
-                elif self.move_type(opponent, move) == 0.5:
-                    print(
-                        f"{self.name} used {move} .... it wasn't very effective. Your Pokemon dealt {dmg:.2f} to {opponent.name}")
-                    print(f'Your {self.name}: {self.HP:.2f}HP')
-                    print(f"Opponent's {opponent.name}: {opponent.HP:.2f}HP")
-                    print('––––––––––')
-                else:
-                    print(f"{self.name} used {move}. Your Pokemon dealt {dmg:.2f} to {opponent.name}")
-                    print(f'Your {self.name}: {self.HP:.2f}HP')
-                    print(f"Opponent's {opponent.name}: {opponent.HP:.2f}HP")
-                    print('––––––––––')
-                priority = False
-            elif priority == False:
-                print("Opponent's turn:")
-                print(f"What will {opponent.name} do?\n")
-                move = opponent.opp_move(opponent)
-                dmg = opponent.calculate_damage(self, move)
-                self.HP -= dmg
-                if opponent.move_type(self,
-                                      move) == 2:  # Changes based on whether the move was super effective, effective, or not very effective
-                    print(
-                        f"{opponent.name} used {move} .... It was super effective! Your opponent's Pokemon dealt {dmg:.2f} to {self.name}")
-                    print(f'Your {self.name}: {self.HP:.2f}HP')
-                    print(f"Opponent's {opponent.name}: {opponent.HP:.2f}HP")
-                    print('––––––––––')
-                elif opponent.move_type(self, move) == 0.5:
-                    print(
-                        f"{opponent.name} used {move} .... it wasn't very effective. Your opponent's Pokemon dealt {dmg:.2f} to {self.name}")
-                    print(f'{self.name}: {self.HP:.2f}HP')
-                    print(f"Opponent's {opponent.name}: {opponent.HP:.2f}HP")
-                    print('––––––––––')
-                else:
-                    print(f"{opponent.name} used {move}. Your opponent's Pokemon dealt {dmg:.2f} to {self.name}")
-                    print(f'Your {self.name}: {self.HP:.2f}HP')
-                    print(f"Opponent's {opponent.name}: {opponent.HP:.2f}HP")
-                    print('––––––––––')
-                priority = True
-        if self.HP <= 0:
-            self.HP = 0
-            print(f"{self.name} fainted!")
-            return "Loss"
-
-        if opponent.HP <= 0:
-            opponent.HP = 0
-            print(f"{opponent.name} fainted!")
-            self.update_level(opponent)
-            return "Win"
+    def select_poke(self):
+        """Creates buttons to select which Pokémon you want to battle with"""
+        posx = [20,340,660,20,340,660]
+        posy = [535,535,535,630,630,630]
+        counter = 0
+        poke_buttons = []
+        for poke in self.party:
+            poke = create_button(posx[counter], posy[counter], 320, 95, str(poke))
+            poke_buttons.append(poke)
+            counter += 1
+        return poke_buttons
 
 
-def main():
-    """Code that uses the above classes and functions to create a working game program"""
-    enemy = ai()
-    trainer = Pokemon(enemy)
-    p = Pokedex()
-    start = input("Choose your starter Pokemon: Bulbasaur(1), Charmander(2), or Squirtle(3)?")
-    if start == '1':
-        poke = "Bulbasaur"
-    elif start == '2':
-        poke = 'Charmander'
-    elif start == '3':
-        poke = 'Squirtle'
-    starter = Pokemon(poke)
-    starter.Level = 5
-    p.add_mon(starter)
-    print(f"You have chosen {starter} as your starter Pokemon!\n––––––––––")
-    T_HP = trainer.HP
-    S_HP = starter.HP
-    battle1 = starter.battle(trainer)
-    if battle1 == "Loss":
-        print("You lost, you are not cut out to be a pokemon master.")
-        p.mon_faint(starter)
-    elif battle1 == "Win":
-        trainer.HP = T_HP
-        starter.HP = S_HP
-        p.add_mon(trainer)
-    while p.checklen() > 0:
-        enemy = ai()
-        trainer = Pokemon(enemy)
-        T_HP = trainer.HP
-        poke_name = p.choose_fighter()
-        P_HP= poke_name.HP
-        battle = poke_name.battle(trainer)
-        if battle == "Loss":
-            p.mon_faint(poke_name)
-            print(p)
-            if p.checklen() == 0:
-                print("You lost on your way to becoming a pokemon master. Hopefully you are more fortunate in your future travels.")
-                break
-            else:
-                print("They got away.")
-        elif battle == "Win":
-            p.add_mon(trainer)
-            trainer.HP = T_HP
-            poke_name.HP = P_HP
+    def __str__(self):
+        """Returns your party"""
+        string = ""
+        counter = 1
+        for poke in self.party:
+            string += (f"{poke.__repr__()}({counter})")
+            counter += 1
+        return string
+
 
 # Game Loop
+starter = None
+trainer = None
+battle_poke = None
+pokedex = Pokedex()
 status = 'starter'
 while status != 'quit':
     bulbasaur = Pokemon("Bulbasaur", 50, 225)  # Makes Pokémon into Pokémon class object
@@ -543,19 +479,34 @@ while status != 'quit':
                 click_loc = event.pos
                 for i in range(len(starter_pokemons)):
                     if starter_pokemons[i].get_rect().collidepoint(click_loc):
-                        player = starter_pokemons[i]
+                        starter = starter_pokemons[i]
+                        starter.Level = 5
+                        pokedex.add_mon(starter)
                         # enemy trainer
                         enemy = ai()
-                        trainer = Pokemon(enemy)
+                        trainer = Pokemon(enemy, 250, -50)
 
-                        player.hp_x = 275
-                        player.hp_y = 250
+                        starter.hp_x = 275
+                        starter.hp_y = 250
                         trainer.hp_x = 50
                         trainer.hp_y = 50
 
-                        status = 'prebattle'
+                        status = 'battle start'
+        if status == 'battle start':
+            # select Pokémon buttons appear
+            pokedex.select_poke()
+            if event.type == MOUSEBUTTONDOWN:
+                click_loc = event.pos
+                for i in range(len(pokedex.select_poke())):
+                    party = pokedex.select_poke()
+                    poke = party[i]
 
-    # Start game code here
+                    if poke.collidepoint(click_loc):
+                        battle_poke = pokedex.party[i]
+
+
+
+
     if status == 'starter':
         screen.fill(white)  # White background
         charmander.paint()  # Paint starter pokemon on screen
@@ -569,6 +520,59 @@ while status != 'quit':
 
         pygame.display.update()
 
+    if status == 'battle start':
+        screen.fill(white)
+        pygame.display.update()
+
+        # trainer repositioning and fading in
+        trainer.x = 250
+        trainer.y = -50
+        trainer.size = 350
+        trainer.set_sprite('front')
+
+        # makes Pokémon fade in using the trans feature in paint
+        transparency = 0
+        while transparency < 255:
+            screen.fill(white)
+            trainer.paint(transparency)
+            transparency += 1
+            message(f"Trainer sent out {trainer.name}!")
+            # update screen so trainer Pokémon will appear before player Pokémon
+            pygame.display.update()
+
+        time.sleep(1)
+
+        # player repositioning and fade
+        battle_poke.x = -50
+        battle_poke.y = 100
+        battle_poke.size = 350
+        battle_poke.set_sprite('back')
+
+        transparency = 0
+        while transparency < 255:
+            battle_poke.paint(transparency)
+            transparency += 1
+            message(f"You sent out {battle_poke.name}!")
+
+        # drawing the hp and xp of the player and trainer
+        battle_poke.hp_bar()
+        trainer.hp_bar()
+        battle_poke.xp_text()
+        trainer.xp_text()
+
+        priority = battle_poke.battle_priority(trainer)
+        if priority:
+            status = 'player turn'
+        else:
+            status = 'trainer turn'
+
+        pygame.display.update()
+
+    if status == 'player turn':
+        pass
+
+    if status == 'trainer turn':
+        pass
 
     # Define location of top left corner of hp bar (names: self.hp_x, self.hp_y)
 
