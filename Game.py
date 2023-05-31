@@ -498,7 +498,8 @@ while status != 'quit':
             status = 'quit'
             pygame.quit()
             sys.exit()
-        # needs to be in this for loop because this is where all game events are handled(ie mouse clicks)
+
+        #Starter selection screen
         if status == 'starter':
             # Makes Pokémon into Pokémon class object
             bulbasaur = Pokemon("Bulbasaur", 50, 225)
@@ -506,7 +507,8 @@ while status != 'quit':
             charmander = Pokemon("Charmander", 650, 225)
             #Sets starter to none because they haven't chosen a starter yet
             starter = None
-            starter1 = ImageButton(100,200, bulbasaur.set_sprite("front"), 1, "bulbasaur") #Making the buttons
+            #Making buttons (Still need to change the set_sprite because Image button needs the file name not the actual image)
+            starter1 = ImageButton(100, 200, bulbasaur.set_sprite("front"), 1, "bulbasaur")
             starter2 = ImageButton(300, 200, charmander.set_sprite("front"), 1, "charmander")
             starter3 = ImageButton(500, 200, squirtle.set_sprite("front"), 1, "squirtle")
             starter1.draw() #Drawing the buttons on the screen
