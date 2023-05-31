@@ -415,12 +415,15 @@ class Pokedex:
     def __init__(self):
         """Initializes the attributes for the Pokedex Class"""
         self.party = []
+
     def add_mon(self,mon):
         """Adds a pokemon to your pokedex/party"""
         self.party.append(mon)
+
     def mon_faint(self,mon):
         """Removes a pokemon from your pokedex/party when it faints"""
         self.party.remove(mon)
+
     def choose_fighter(self):
         """Choose which one of your pokemon you want to fight with"""
         print(f"Your current party: {self.party}")
@@ -428,6 +431,7 @@ class Pokedex:
         choice = self.party[fighter-1]
         print(f"You chose {choice}!")
         return choice
+
     def checklen(self):
         """Returns the length of the party"""
         return len(self.party)
