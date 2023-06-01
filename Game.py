@@ -4,7 +4,6 @@ from pygame.locals import *
 import sys
 import time
 import random as rand
-import requests
 
 pygame.init()
 clock = pygame.time.Clock()
@@ -180,7 +179,7 @@ def message(message):
     """Displays messages in game by creating objects"""
     # Blit and Load: https: // waylonwalker.com / pygame - image - load /
     # Fonts: https://nerdparadise.com/programming/pygame/part5
-    #10, 350, 480, 140
+    # 10, 350, 480, 140
     pygame.draw.rect(screen, white, (10, 525, 980, 210))
     pygame.draw.rect(screen, black, (10, 525, 980, 210), 3)
 
@@ -221,9 +220,7 @@ def create_button(x, y, width, height, text):
     text = font.render(f'{text}', True, black)
     text_rect = text.get_rect(center=button.center)
     screen.blit(text, text_rect)
-
     pygame.display.update()
-
     return button
 
 class ImageButton():
@@ -271,10 +268,6 @@ class Pokemon(pygame.sprite.Sprite):
         self.Moves = CHARACTERS[name]['Moves']
         self.Level = 1
         self.Experience = 0
-
-        # setting up the json for the Pokémon API
-        data = requests.get(f'https://pokeapi.co/api/v2/pokemon/{name.lower()}')
-        self.json = data.json()
 
         # set sprites position
         self.x = x
@@ -346,6 +339,7 @@ class Pokemon(pygame.sprite.Sprite):
         nwidth = self.image.get_width() * scale
         nheight = self.image.get_height() * scale
         self.image = pygame.transform.scale(self.image, (nwidth, nheight))
+        return self.image
 
 
     def battle_priority(self, opponent):
@@ -395,7 +389,7 @@ class Pokemon(pygame.sprite.Sprite):
         return rand.choice(CHARACTERS[opponent.name]['Moves'])
 
     # new function
-    def hp_bar(self):
+    def hp_bar(self, x, y):
         """Draws the HP bar and the text showing how much HP the Pokémon has"""
         # makes two bars and reveals the red one when the green gets smaller
         scale = 200 // self.HP
@@ -410,9 +404,9 @@ class Pokemon(pygame.sprite.Sprite):
 
         # makes bar pygame objects and positions them with text
         # self.bar_x and self.bar_y are defined in the game loop
-        text_rect = text.get_rect(topleft=(self.hp_x, self.hp_y+30))
-        bar_rect = bar.get_rect(topleft=(self.hp_x, self.hp_y))
-        current_bar_rect = current_bar.get_rect(topleft=(self.hp_x, self.hp_y))
+        text_rect = text.get_rect(topleft=(x, y+30))
+        bar_rect = bar.get_rect(topleft=(x, y))
+        current_bar_rect = current_bar.get_rect(topleft=(x, y))
 
         # draws bars into the actual game
         screen.blit(bar, bar_rect)
@@ -420,7 +414,7 @@ class Pokemon(pygame.sprite.Sprite):
         screen.blit(text, text_rect)
 
         # new function
-    def xp_text(self):
+    def xp_text(self, x, y):
         """Draws xp text next to the health bars"""
         # finds the max xp for the given level
         xp = 1
@@ -433,7 +427,7 @@ class Pokemon(pygame.sprite.Sprite):
 
         font = pygame.font.SysFont('sqaresans', 25)
         text = font.render(f"Lvl {self.Level}: {self.Experience} / {xp}", True, black)
-        text_rect = text.get_rect(topleft=(self.hp_x + 120, self.hp_y + 30))
+        text_rect = text.get_rect(topleft=(x + 120, y + 30))
         screen.blit(text, text_rect)
 
 class Pokedex:
@@ -491,6 +485,7 @@ trainer = None
 battle_poke = None
 pokedex = Pokedex()
 status = 'starter'
+move_buttons = []
 while status != 'quit':
     # Should be at the start, quits game if red x at top of screen is hit
     for event in pygame.event.get():
@@ -499,23 +494,21 @@ while status != 'quit':
             pygame.quit()
             sys.exit()
 
-        #Starter selection screen
+        # Starter selection screen
         if status == 'starter':
             # Makes Pokémon into Pokémon class object
             bulbasaur = Pokemon("Bulbasaur", 50, 225)
             squirtle = Pokemon('Squirtle', 350, 225)
             charmander = Pokemon("Charmander", 650, 225)
-            #Sets starter to none because they haven't chosen a starter yet
-            starter = None
-            #Making buttons (Still need to change the set_sprite because Image button needs the file name not the actual image)
+            # Making buttons (Still need to change the set_sprite because Image button needs the file name not the actual image)
             starter1 = ImageButton(100, 200, bulbasaur.set_sprite("front"), 1, "bulbasaur")
             starter2 = ImageButton(300, 200, charmander.set_sprite("front"), 1, "charmander")
             starter3 = ImageButton(500, 200, squirtle.set_sprite("front"), 1, "squirtle")
-            starter1.draw() #Drawing the buttons on the screen
+            starter1.draw() # Drawing the buttons on the screen
             starter2.draw()
             starter3.draw()
 
-            #Checking if player picked a starter
+            # Checking if player picked a starter
             if starter1 == "bulbasaur":
                 starter = bulbasaur
             elif starter2 == "charmander":
@@ -523,21 +516,17 @@ while status != 'quit':
             elif starter3 == "squirtle":
                 starter = squirtle
 
-            #Need to see if a starter is selected before moving on to the next stage.
-            if starter != None:
+            # Need to see if a starter is selected before moving on to the next stage.
+            if starter is not None:
                 starter.Level = 5
                 pokedex.add_mon(starter)
                 # enemy trainer
                 enemy = ai()
                 trainer = Pokemon(enemy, 250, -50)
 
-                starter.hp_x = 275
-                starter.hp_y = 250
-                trainer.hp_x = 50
-                trainer.hp_y = 50
-
                 status = 'pre battle'
-        if status == 'pre battle':
+
+        elif status == 'pre battle':
             # select Pokémon buttons appear
             pokedex.select_poke()
             if event.type == MOUSEBUTTONDOWN:
@@ -548,6 +537,24 @@ while status != 'quit':
 
                     if poke.collidepoint(click_loc):
                         battle_poke = pokedex.party[i]
+
+        elif status == 'player turn':
+        # create buttons
+        for i in range(len(move_buttons)):
+            click_loc = event.pos
+            button = move_buttons[i]
+            if button.collidepoint(click_loc):
+                move = battle_poke.Moves[i]
+                battle_poke.use_attack(trainer, move)
+
+            if trainer.HP == 0:
+                status = 'faint'
+            else:
+                status = 'trainer turn'
+
+
+
+
 
     if status == 'pre battle':
         screen.fill(white)
@@ -584,10 +591,10 @@ while status != 'quit':
             message(f"You sent out {battle_poke.name}!")
 
         # drawing the hp and xp of the player and trainer
-        battle_poke.hp_bar()
-        trainer.hp_bar()
-        battle_poke.xp_text()
-        trainer.xp_text()
+        battle_poke.hp_bar(275, 250)
+        trainer.hp_bar(50, 50)
+        battle_poke.xp_text(275, 250)
+        trainer.xp_text(50, 50)
 
         priority = battle_poke.battle_priority(trainer)
         if priority:
@@ -597,8 +604,28 @@ while status != 'quit':
 
         pygame.display.update()
 
+
     if status == 'player turn':
-        pass
+        screen.fill(white)
+        battle_poke.paint()
+        trainer.paint()
+
+        battle_poke.hp_bar(275, 250)
+        trainer.hp_bar(50, 50)
+
+        # creating the move buttons
+        posx = [250, 750, 250, 750]
+        posy = [94, 94, 281, 281]
+        counter = 0
+        for move in battle_poke.Moves():
+            button = create_button(posx[counter], posy[counter], 450, 175, str(move))  # Make 3 to 4 buttons for moves
+            move_buttons.append(button)
+            counter += 1
+
+        pygame.display.update()
+
+
+
 
     if status == 'trainer turn':
         pass
