@@ -500,10 +500,13 @@ while status != 'quit':
             bulbasaur = Pokemon("Bulbasaur", 50, 225)
             squirtle = Pokemon('Squirtle', 350, 225)
             charmander = Pokemon("Charmander", 650, 225)
+            starter1img = pygame.image.load(f"images/bulbasaurfront.png")
+            starter2img = pygame.image.load(f"images/charmanderfront.png")
+            starter3img = pygame.image.load(f"images/squirtlefront.png")
             # Making buttons (Still need to change the set_sprite because Image button needs the file name not the actual image)
-            starter1 = ImageButton(100, 200, bulbasaur.set_sprite("front"), 1, "bulbasaur")
-            starter2 = ImageButton(300, 200, charmander.set_sprite("front"), 1, "charmander")
-            starter3 = ImageButton(500, 200, squirtle.set_sprite("front"), 1, "squirtle")
+            starter1 = ImageButton(100, 200, starter1img, 1, "bulbasaur")
+            starter2 = ImageButton(300, 200, starter2img, 1, "charmander")
+            starter3 = ImageButton(500, 200, starter3img, 1, "squirtle")
             starter1.draw() # Drawing the buttons on the screen
             starter2.draw()
             starter3.draw()
@@ -538,19 +541,19 @@ while status != 'quit':
                     if poke.collidepoint(click_loc):
                         battle_poke = pokedex.party[i]
 
-        elif status == 'player turn':
+       # elif status == 'player turn':
         # create buttons
-        for i in range(len(move_buttons)):
-            click_loc = event.pos
-            button = move_buttons[i]
-            if button.collidepoint(click_loc):
-                move = battle_poke.Moves[i]
-                battle_poke.use_attack(trainer, move)
+        #for i in range(len(move_buttons)):
+           # click_loc = event.pos
+          #  button = move_buttons[i]
+          #  if button.collidepoint(click_loc):
+             #   move = battle_poke.Moves[i]
+            #    battle_poke.use_attack(trainer, move)
 
-            if trainer.HP == 0:
-                status = 'faint'
-            else:
-                status = 'trainer turn'
+           # if trainer.HP == 0:
+             #   status = 'faint'
+          #  else:
+             #   status = 'trainer turn'
 
 
 
