@@ -182,13 +182,13 @@ def message(message):
     pygame.draw.rect(screen, white, (10, 525, 980, 210))
     pygame.draw.rect(screen, black, (10, 525, 980, 210), 3)
 
-    font = pygame.font.SysFont("squaresans", 25)
+    font = pygame.font.SysFont("squaresans", 30)
     text = font.render(message, True, black)
 
     # creates rectangle
     text_rect = text.get_rect()
     text_rect.x = 30
-    text_rect.y = 645
+    text_rect.y = 625
 
     # connecting the text with the rectangle as one object
     screen.blit(text, text_rect)
@@ -215,7 +215,7 @@ def create_button(x, y, width, height, text):
         pygame.draw.rect(screen, white, button, 3)
 
     # adds text to the box after everything else
-    font = pygame.font.SysFont('squaresans', 25)
+    font = pygame.font.SysFont('squaresans', 30)
     text = font.render(f'{text}', True, black)
     text_rect = text.get_rect(center=button.center)
     screen.blit(text, text_rect)
@@ -334,7 +334,7 @@ class Pokemon(pygame.sprite.Sprite):
         # https: // www.pygame.org / docs / ref / image.html  # pygame.image.load
 
         # scales the image
-        scale = self.size / self.image.get_width()
+        scale = self.size / self.image.get_width() + 2
         nwidth = self.image.get_width() * scale
         nheight = self.image.get_height() * scale
         self.image = pygame.transform.scale(self.image, (nwidth, nheight))
@@ -486,12 +486,19 @@ pokedex = Pokedex()
 status = 'starter'
 move_buttons = []
 while status != 'quit':
+
     # Should be at the start, quits game if red x at top of screen is hit
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             status = 'quit'
-            pygame.quit()
-            sys.exit()
+
+        # If the user wants to or doesn't want to play again
+        if event.type == pygame.KEYDOWN:
+            if event.type == pygame.K_y:
+                status = 'starter'
+
+            elif event.type == pygame.K_n:
+                status = 'quit'
 
         # Starter selection screen
         if status == 'starter':
@@ -500,13 +507,14 @@ while status != 'quit':
             squirtle = Pokemon('Squirtle', 350, 225)
             charmander = Pokemon("Charmander", 650, 225)
             # Making buttons (Still need to change the set_sprite because Image button needs the file name not the actual image)
-            starter1 = ImageButton(100, 200, bulbasaur.set_sprite("front"), 1, "bulbasaur")
-            starter2 = ImageButton(300, 200, charmander.set_sprite("front"), 1, "charmander")
-            starter3 = ImageButton(500, 200, squirtle.set_sprite("front"), 1, "squirtle")
+            starter1 = ImageButton(-50, 75, bulbasaur.set_sprite("front"), 1.5, "bulbasaur")
+            starter2 = ImageButton(250, 50, charmander.set_sprite("front"), 1.5, "charmander")
+            starter3 = ImageButton(550, 50, squirtle.set_sprite("front"), 1.5, "squirtle")
             screen.fill(white)
             starter1.draw() # Drawing the buttons on the screen
             starter2.draw()
             starter3.draw()
+            message("Choose your Pokémon!")
 
             # Checking if player picked a starter
             if starter1 == "bulbasaur":
@@ -529,7 +537,7 @@ while status != 'quit':
         elif status == 'pre battle':
             # select Pokémon buttons appear
             pokedex.select_poke()
-            if event.type == MOUSEBUTTONDOWN:
+            if event.type == pygame.MOUSEBUTTONDOWN:
                 click_loc = event.pos
                 for i in range(len(pokedex.select_poke())):
                     party = pokedex.select_poke()
@@ -548,7 +556,7 @@ while status != 'quit':
                     battle_poke.use_attack(trainer, move)
 
                 if trainer.current_HP == 0:
-                    status = 'faint'
+                    status = 'trainer faint'
                 else:
                     status = 'trainer turn'
 
@@ -607,6 +615,8 @@ while status != 'quit':
 
         battle_poke.hp_bar(275, 250)
         trainer.hp_bar(50, 50)
+        battle_poke.xp_text(275, 250)
+        trainer.xp_text(50, 50)
 
         # creating the move buttons
         posx = [250, 750, 250, 750]
@@ -625,26 +635,75 @@ while status != 'quit':
         trainer.paint()
         battle_poke.hp_bar(275, 250)
         trainer.hp_bar(50, 50)
+        battle_poke.xp_text(275, 250)
+        trainer.xp_text(50, 50)
+
+        message('.....')
+        time.sleep(1)
 
         move = battle_poke.opp_move(trainer)
         trainer.use_attack(battle_poke, move)
+        message(f"{trainer.name} used {move}!")
 
         if battle_poke.HP == 0:
-            status = 'faint'
+            status = 'player faint'
         else:
             status = 'player turn'
 
         pygame.display.update()
 
-    if status == 'faint':
+    # this should be correct, but I'm unsure about the status loop(to pre battle)
+    if status == 'player faint':
+        # make Pokémon slowly fade out
         trans = 255
         while trans > 0:
             screen.fill(white)
             battle_poke.hp_bar(275, 250)
             trainer.hp_bar(50, 50)
+            battle_poke.xp_text(275, 250)
+            trainer.xp_text(50, 50)
+            battle_poke.paint(trans)
+            trainer.paint()
 
-            if battle_poke.current_HP == 0:
+            message(f"{battle_poke.name} fainted!")
+            trans -= 1
 
+        # removes Pokémon from Pokédex and if you still have another Pokémon loops back, so you can fight with it
+        pokedex.mon_faint(battle_poke)
+        if pokedex.checklen() == 0:
+            status = 'game over'
+        else:
+            status = 'pre battle'
+        pygame.display.update()
+
+    if status == 'trainer faint':
+        # make Pokémon slowly fade out
+        trans = 255
+        while trans > 0:
+            screen.fill(white)
+            battle_poke.hp_bar(275, 250)
+            trainer.hp_bar(50, 50)
+            battle_poke.xp_text(275, 250)
+            trainer.xp_text(50, 50)
+            battle_poke.paint()
+            trainer.paint(trans)
+            message(f"{trainer.name} fainted!")
+        # resetting the health of each Pokémon
+        battle_poke.current_HP = battle_poke.HP
+        trainer.current_HP = trainer.HP
+        battle_poke.update_level(trainer)
+        pokedex.add_mon(trainer)
+
+        # need to make this status
+        status = 'homescreen'
+        pygame.display.update()
+
+    if status == 'game over':
+        message(f"You lost, you are not cut out to be a pokemon master")
+        time.sleep(5)
+        message(f"Do you want to play again?(Y/N)")
 
     pygame.display.flip()
 
+pygame.quit()
+sys.exit()
