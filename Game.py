@@ -182,13 +182,13 @@ def message(message):
     pygame.draw.rect(screen, white, (10, 525, 980, 210))
     pygame.draw.rect(screen, black, (10, 525, 980, 210), 3)
 
-    font = pygame.font.SysFont("squaresans", 25)
+    font = pygame.font.SysFont("squaresans", 30)
     text = font.render(message, True, black)
 
     # creates rectangle
     text_rect = text.get_rect()
     text_rect.x = 30
-    text_rect.y = 645
+    text_rect.y = 625
 
     # connecting the text with the rectangle as one object
     screen.blit(text, text_rect)
@@ -215,7 +215,7 @@ def create_button(x, y, width, height, text):
         pygame.draw.rect(screen, white, button, 3)
 
     # adds text to the box after everything else
-    font = pygame.font.SysFont('squaresans', 25)
+    font = pygame.font.SysFont('squaresans', 30)
     text = font.render(f'{text}', True, black)
     text_rect = text.get_rect(center=button.center)
     screen.blit(text, text_rect)
@@ -334,7 +334,7 @@ class Pokemon(pygame.sprite.Sprite):
         # https: // www.pygame.org / docs / ref / image.html  # pygame.image.load
 
         # scales the image
-        scale = self.size / self.image.get_width()
+        scale = self.size / self.image.get_width() + 2
         nwidth = self.image.get_width() * scale
         nheight = self.image.get_height() * scale
         self.image = pygame.transform.scale(self.image, (nwidth, nheight))
@@ -507,13 +507,14 @@ while status != 'quit':
             squirtle = Pokemon('Squirtle', 350, 225)
             charmander = Pokemon("Charmander", 650, 225)
             # Making buttons (Still need to change the set_sprite because Image button needs the file name not the actual image)
-            starter1 = ImageButton(100, 200, bulbasaur.set_sprite("front"), 1, "bulbasaur")
-            starter2 = ImageButton(300, 200, charmander.set_sprite("front"), 1, "charmander")
-            starter3 = ImageButton(500, 200, squirtle.set_sprite("front"), 1, "squirtle")
+            starter1 = ImageButton(-50, 75, bulbasaur.set_sprite("front"), 1.5, "bulbasaur")
+            starter2 = ImageButton(250, 50, charmander.set_sprite("front"), 1.5, "charmander")
+            starter3 = ImageButton(550, 50, squirtle.set_sprite("front"), 1.5, "squirtle")
             screen.fill(white)
             starter1.draw() # Drawing the buttons on the screen
             starter2.draw()
             starter3.draw()
+            message("Choose your Pokémon!")
 
             # Checking if player picked a starter
             if starter1 == "bulbasaur":
