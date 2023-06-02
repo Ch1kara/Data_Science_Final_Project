@@ -6,7 +6,6 @@ import time
 import random as rand
 
 pygame.init()
-clock = pygame.time.Clock()
 
 # screen size and title at the top
 screen_width = 1000
@@ -238,6 +237,8 @@ class ImageButton():
         #get pos
         pos = pygame.mouse.get_pos()
 
+        screen.blit(self.image, (self.rect.x, self.rect.y))
+
         if self.rect.collidepoint(pos):
             if pygame.mouse.get_pressed()[0] == 1 and self.clicked == False:
                 self.clicked = True
@@ -245,8 +246,6 @@ class ImageButton():
 
         if pygame.mouse.get_pressed()[0] == 0:
             self.clicked = False
-
-        screen.blit(self.image, (self.rect.x, self.rect.y))
 
 def ai():
     '''Creates a trainer that chooses a random pokemon to battle you'''
@@ -500,13 +499,11 @@ while status != 'quit':
             bulbasaur = Pokemon("Bulbasaur", 50, 225)
             squirtle = Pokemon('Squirtle', 350, 225)
             charmander = Pokemon("Charmander", 650, 225)
-            starter1img = pygame.image.load(f"images/bulbasaurfront.png")
-            starter2img = pygame.image.load(f"images/charmanderfront.png")
-            starter3img = pygame.image.load(f"images/squirtlefront.png")
             # Making buttons (Still need to change the set_sprite because Image button needs the file name not the actual image)
-            starter1 = ImageButton(100, 200, starter1img, 1, "bulbasaur")
-            starter2 = ImageButton(300, 200, starter2img, 1, "charmander")
-            starter3 = ImageButton(500, 200, starter3img, 1, "squirtle")
+            starter1 = ImageButton(100, 200, bulbasaur.set_sprite("front"), 1, "bulbasaur")
+            starter2 = ImageButton(300, 200, charmander.set_sprite("front"), 1, "charmander")
+            starter3 = ImageButton(500, 200, squirtle.set_sprite("front"), 1, "squirtle")
+            screen.fill(white)
             starter1.draw() # Drawing the buttons on the screen
             starter2.draw()
             starter3.draw()
@@ -541,23 +538,19 @@ while status != 'quit':
                     if poke.collidepoint(click_loc):
                         battle_poke = pokedex.party[i]
 
-       # elif status == 'player turn':
-        # create buttons
-        #for i in range(len(move_buttons)):
-           # click_loc = event.pos
-          #  button = move_buttons[i]
-          #  if button.collidepoint(click_loc):
-             #   move = battle_poke.Moves[i]
-            #    battle_poke.use_attack(trainer, move)
+        elif status == 'player turn':
+            # create buttons
+            for i in range(len(move_buttons)):
+                click_loc = event.pos
+                button = move_buttons[i]
+                if button.collidepoint(click_loc):
+                    move = battle_poke.Moves[i]
+                    battle_poke.use_attack(trainer, move)
 
-           # if trainer.HP == 0:
-             #   status = 'faint'
-          #  else:
-             #   status = 'trainer turn'
-
-
-
-
+                if trainer.current_HP == 0:
+                    status = 'faint'
+                else:
+                    status = 'trainer turn'
 
     if status == 'pre battle':
         screen.fill(white)
@@ -607,7 +600,6 @@ while status != 'quit':
 
         pygame.display.update()
 
-
     if status == 'player turn':
         screen.fill(white)
         battle_poke.paint()
@@ -627,16 +619,32 @@ while status != 'quit':
 
         pygame.display.update()
 
-
-
-
     if status == 'trainer turn':
-        pass
+        screen.fill(white)
+        battle_poke.paint()
+        trainer.paint()
+        battle_poke.hp_bar(275, 250)
+        trainer.hp_bar(50, 50)
 
-    # Define location of top left corner of hp bar (names: self.hp_x, self.hp_y)
+        move = battle_poke.opp_move(trainer)
+        trainer.use_attack(battle_poke, move)
 
-    # display.flip() should be at the end
+        if battle_poke.HP == 0:
+            status = 'faint'
+        else:
+            status = 'player turn'
+
+        pygame.display.update()
+
+    if status == 'faint':
+        trans = 255
+        while trans > 0:
+            screen.fill(white)
+            battle_poke.hp_bar(275, 250)
+            trainer.hp_bar(50, 50)
+
+            if battle_poke.current_HP == 0:
+
+
     pygame.display.flip()
 
-    # determines how often the screen is refreshed
-    clock.tick(60)
