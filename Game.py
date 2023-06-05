@@ -510,7 +510,25 @@ while status != 'quit':
                 status = 'quit'
 
         # Starter selection screen
-        if status == 'starter':
+
+        if status == "title":
+            screen.fill(white)
+            font = pygame.font.SysFont("squaresans", 60)
+            text = font.render("Welcome to the Wonderful World of Pokemon", True, black)
+            text_rect = text.get_rect()
+            text_rect.x = 50
+            text_rect.y = 100
+
+            # connecting the text with the rectangle as one object
+            screen.blit(text, text_rect)
+            # updates this portion of the screen
+            pygame.display.update()
+            start_button = create_button(450, 375, 100, 100, "Start")
+            if event.type == MOUSEBUTTONDOWN:
+                click_loc = event.pos
+                if start_button.get_rect().collidepoint(click_loc):
+                    status = "starter"
+        elif status == 'starter':
             if event.type == MOUSEBUTTONDOWN:
                 click_loc = event.pos
                 for i in range(len(starters)):
