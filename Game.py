@@ -491,7 +491,7 @@ move_buttons = []
 bulbasaur = Pokemon("Bulbasaur", 50, 225)
 squirtle = Pokemon('Squirtle', 350, 225)
 charmander = Pokemon("Charmander", 650, 225)
-starters = [bulbasaur, squirtle, charmander]
+starters = [bulbasaur, charmander, squirtle]
 
 # Making buttons (Still need to change the set_sprite because Image button needs the file name not the actual image)
 starter1 = ImageButton(-50, 75, bulbasaur.set_sprite("front"), 1.5, "bulbasaur")
@@ -526,6 +526,7 @@ while status != 'quit':
                 for i in range(len(starters)):
                     if starters[i].get_rect().collidepoint(click_loc):
                         starter = starters[i]
+                        time.sleep(1)
 
                 # Need to see if a starter is selected before moving on to the next stage.
                 if starter is not None:
@@ -619,10 +620,10 @@ while status != 'quit':
             message(f"You sent out {battle_poke.name}!")
 
         # drawing the hp and xp of the player and trainer
-        battle_poke.hp_bar(500, 400)
-        trainer.hp_bar(100, 100)
-        battle_poke.xp_text(500, 400)
-        trainer.xp_text(100, 100)
+        battle_poke.hp_bar(400, 400)
+        trainer.hp_bar(200, 100)
+        battle_poke.xp_text(400, 400)
+        trainer.xp_text(200, 100)
 
         priority = battle_poke.battle_priority(trainer)
         if priority:
@@ -636,18 +637,19 @@ while status != 'quit':
         screen.fill(white)
         battle_poke.paint()
         trainer.paint()
-        battle_poke.hp_bar(500, 400)
-        trainer.hp_bar(100, 100)
-        battle_poke.xp_text(500, 400)
-        trainer.xp_text(100, 100)
+        battle_poke.hp_bar(400, 400)
+        trainer.hp_bar(200, 100)
+        battle_poke.xp_text(400, 400)
+        trainer.xp_text(200, 100)
 
         # creating the move buttons
-        posx = [100, 560, 100, 560]
-        posy = [400, 400, 585, 585]
+        posx = [50, 510, 50, 510]
+        posy = [530, 530, 630, 630]
         counter = 0
         message('')
         for move in battle_poke.Moves:
             button = create_button(posx[counter], posy[counter], 450, 100, move)  # Make 3 to 4 buttons for moves
+            pygame.draw.rect(screen, black, (posx[counter], posy[counter], 450, 100), 3)
             move_buttons.append(button)
             counter += 1
 
@@ -662,6 +664,9 @@ while status != 'quit':
         battle_poke.xp_text(500, 400)
         trainer.xp_text(100, 100)
         pygame.display.update()
+
+        message('What will trainer do?')
+        time.sleep(1)
 
         message('.....')
         time.sleep(1)
@@ -683,10 +688,10 @@ while status != 'quit':
         trans = 255
         while trans > 0:
             screen.fill(white)
-            battle_poke.hp_bar(500, 400)
-            trainer.hp_bar(100, 100)
-            battle_poke.xp_text(500, 400)
-            trainer.xp_text(100, 100)
+            battle_poke.hp_bar(400, 400)
+            trainer.hp_bar(200, 100)
+            battle_poke.xp_text(400, 400)
+            trainer.xp_text(200, 100)
             battle_poke.paint(trans)
             trainer.paint()
 
@@ -706,10 +711,10 @@ while status != 'quit':
         trans = 255
         while trans > 0:
             screen.fill(white)
-            battle_poke.hp_bar(500, 400)
-            trainer.hp_bar(100, 100)
-            battle_poke.xp_text(500, 400)
-            trainer.xp_text(100, 100)
+            battle_poke.hp_bar(400, 400)
+            trainer.hp_bar(200, 100)
+            battle_poke.xp_text(400, 400)
+            trainer.xp_text(200, 100)
             battle_poke.paint()
             trainer.paint(trans)
             message(f"{trainer.name} fainted!")
