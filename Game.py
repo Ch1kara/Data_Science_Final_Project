@@ -479,7 +479,7 @@ starter = None
 trainer = None
 battle_poke = None
 pokedex = Pokedex()
-status = 'starter'
+status = 'title'
 move_buttons = []
 
 # Makes Pokémon into Pokémon class object
@@ -503,7 +503,7 @@ while status != 'quit':
         # If the user wants to or doesn't want to play again
         if event.type == pygame.KEYDOWN:
             if event.type == pygame.K_y:
-                status = 'starter'
+                status = 'title'
 
             elif event.type == pygame.K_n:
                 status = 'quit'
@@ -525,8 +525,10 @@ while status != 'quit':
             start_button = create_button(450, 375, 100, 100, "Start")
             if event.type == MOUSEBUTTONDOWN:
                 click_loc = event.pos
-                if start_button.get_rect().collidepoint(click_loc):
+                if start_button.collidepoint(click_loc):
                     status = "starter"
+                    time.sleep(1)
+
         elif status == 'starter':
             if event.type == MOUSEBUTTONDOWN:
                 click_loc = event.pos
