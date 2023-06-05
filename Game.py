@@ -560,27 +560,18 @@ while status != 'quit':
 
         elif status == 'player turn':
             # create buttons
-            # creating the move buttons
-            posx = [250, 750, 250, 750]
-            posy = [500, 500, 650, 650]
-            counter = 0
-            for move in battle_poke.Moves:
-                button = create_button(posx[counter], posy[counter], 450, 175,
-                                       str(move))  # Make 3 to 4 buttons for moves
-                move_buttons.append(button)
-                counter += 1
-            pygame.display.update()
-            for i in range(len(move_buttons)):
+            if event.type == MOUSEBUTTONDOWN:
                 click_loc = event.pos
-                button = move_buttons[i]
-                if button.collidepoint(click_loc):
-                    move = battle_poke.Moves[i]
-                    battle_poke.use_attack(trainer, move)
+                for i in range(len(battle_poke.Moves)):
+                    button = move_buttons[i]
+                    if button.collidepoint(click_loc):
+                        move = battle_poke.Moves[i]
+                        battle_poke.use_attack(trainer, move)
 
-                if trainer.current_HP == 0:
-                    status = 'trainer faint'
-                else:
-                    status = 'trainer turn'
+                    if trainer.current_HP == 0:
+                        status = 'trainer faint'
+                    else:
+                        status = 'trainer turn'
 
     if status == 'starter':
         screen.fill(white)
@@ -630,9 +621,9 @@ while status != 'quit':
 
         # drawing the hp and xp of the player and trainer
         battle_poke.hp_bar(500, 400)
-        trainer.hp_bar(75, 75)
+        trainer.hp_bar(100, 100)
         battle_poke.xp_text(500, 400)
-        trainer.xp_text(75, 75)
+        trainer.xp_text(100, 100)
 
         priority = battle_poke.battle_priority(trainer)
         if priority:
@@ -647,10 +638,20 @@ while status != 'quit':
         battle_poke.paint()
         trainer.paint()
 
+        # creating the move buttons
+        posx = [250, 750, 250, 750]
+        posy = [500, 500, 650, 650]
+        counter = 0
+        for move in battle_poke.Moves:
+            button = create_button(posx[counter], posy[counter], 450, 175, move)  # Make 3 to 4 buttons for moves
+            move_buttons.append(button)
+            counter += 1
+        pygame.display.update()
+
         battle_poke.hp_bar(500, 400)
-        trainer.hp_bar(75, 75)
+        trainer.hp_bar(100, 100)
         battle_poke.xp_text(500, 400)
-        trainer.xp_text(75, 75)
+        trainer.xp_text(100, 100)
 
         pygame.display.update()
 
@@ -659,9 +660,10 @@ while status != 'quit':
         battle_poke.paint()
         trainer.paint()
         battle_poke.hp_bar(500, 400)
-        trainer.hp_bar(75, 75)
+        trainer.hp_bar(100, 100)
         battle_poke.xp_text(500, 400)
-        trainer.xp_text(75, 75)
+        trainer.xp_text(100, 100)
+        pygame.display.update()
 
         message('.....')
         time.sleep(1)
@@ -670,7 +672,7 @@ while status != 'quit':
         trainer.use_attack(battle_poke, move)
         message(f"{trainer.name} used {move}!")
 
-        if battle_poke.HP == 0:
+        if battle_poke.current_HP == 0:
             status = 'player faint'
         else:
             status = 'player turn'
@@ -684,9 +686,9 @@ while status != 'quit':
         while trans > 0:
             screen.fill(white)
             battle_poke.hp_bar(500, 400)
-            trainer.hp_bar(75, 75)
+            trainer.hp_bar(100, 100)
             battle_poke.xp_text(500, 400)
-            trainer.xp_text(75, 75)
+            trainer.xp_text(100, 100)
             battle_poke.paint(trans)
             trainer.paint()
 
@@ -707,9 +709,9 @@ while status != 'quit':
         while trans > 0:
             screen.fill(white)
             battle_poke.hp_bar(500, 400)
-            trainer.hp_bar(75, 75)
+            trainer.hp_bar(100, 100)
             battle_poke.xp_text(500, 400)
-            trainer.xp_text(75, 75)
+            trainer.xp_text(100, 100)
             battle_poke.paint()
             trainer.paint(trans)
             message(f"{trainer.name} fainted!")
