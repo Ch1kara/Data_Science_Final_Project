@@ -560,7 +560,7 @@ while status != 'quit':
 
         elif status == 'player turn':
             # create buttons
-            if event.type == MOUSEBUTTONDOWN:
+            if event.type == pygame.MOUSEBUTTONDOWN:
                 click_loc = event.pos
                 for i in range(len(battle_poke.Moves)):
                     button = move_buttons[i]
@@ -637,21 +637,20 @@ while status != 'quit':
         screen.fill(white)
         battle_poke.paint()
         trainer.paint()
+        battle_poke.hp_bar(500, 400)
+        trainer.hp_bar(100, 100)
+        battle_poke.xp_text(500, 400)
+        trainer.xp_text(100, 100)
 
         # creating the move buttons
         posx = [250, 750, 250, 750]
         posy = [500, 500, 650, 650]
         counter = 0
+        message('')
         for move in battle_poke.Moves:
             button = create_button(posx[counter], posy[counter], 450, 175, move)  # Make 3 to 4 buttons for moves
             move_buttons.append(button)
             counter += 1
-        pygame.display.update()
-
-        battle_poke.hp_bar(500, 400)
-        trainer.hp_bar(100, 100)
-        battle_poke.xp_text(500, 400)
-        trainer.xp_text(100, 100)
 
         pygame.display.update()
 
