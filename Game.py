@@ -428,7 +428,7 @@ class Pokemon(pygame.sprite.Sprite):
         text_rect = text.get_rect(topleft=(x + 120, y + 30))
         screen.blit(text, text_rect)
 
-class Pokedex:
+class Pokedex():
     def __init__(self):
         """Initializes the attributes for the Pokedex Class"""
         self.party = []
@@ -441,20 +441,20 @@ class Pokedex:
         """Removes a pokemon from your pokedex/party when it faints"""
         self.party.remove(mon)
 
-    def choose_fighter(self):
-        """Choose which one of your pokemon you want to fight with"""
-        print(f"Your current party: {self.party}")
-        fighter = int(input("Choose your Pokemon for the next battle!(number): "))
-        choice = self.party[fighter-1]
-        print(f"You chose {choice}!")
-        return choice
+    #def choose_fighter(self):
+     #   """Choose which one of your pokemon you want to fight with"""
+     #   print(f"Your current party: {self.party}")
+     #   fighter = int(input("Choose your Pokemon for the next battle!(number): "))
+      #  choice = self.party[fighter-1]
+       # print(f"You chose {choice}!")
+       # return choice
 
     def checklen(self):
         """Returns the length of the party"""
         return len(self.party)
 
     # new function
-    def select_poke(self):
+    def poke_buttons(self):
         """Creates buttons to select which Pokémon you want to battle with"""
         x = [20,340,660,20,340,660]
         y = [535,535,535,630,630,630]
@@ -540,23 +540,23 @@ while status != 'quit':
             if starter is not None:
                 starter.Level = 5
                 pokedex.add_mon(starter)
-                battle_poke = starter
+                #battle_poke = starter
                 # enemy trainer
                 enemy = ai()
                 trainer = Pokemon(enemy, 250, -50)
 
                 status = 'pre battle'
 
-        # elif status == 'pre battle':
-        #     # select Pokémon buttons appear
-        #     if event.type == pygame.MOUSEBUTTONDOWN:
-        #         click_loc = event.pos
-        #         for i in range(len(pokedex.party)):
-        #             party = pokedex.select_poke()
-        #             poke = party[i]
-        #
-        #             if poke.collidepoint(click_loc):
-        #                 battle_poke = pokedex.party[i]
+        elif status == 'pre battle':
+            screen.fill(white)
+             # select Pokémon buttons appear
+            pokedex.poke_buttons()
+            if event.type == MOUSEBUTTONDOWN:
+                click_loc = event.pos
+                for i in range(len(pokedex.party)):
+                    if pokedex.party[i].get_rect().collidepoint(click_loc):
+                        battle_poke = pokedex.party[i]
+                        status = "pre battle2"
 
         elif status == 'player turn':
             # create buttons
@@ -583,7 +583,7 @@ while status != 'quit':
         pygame.display.update()
 
 
-    if status == 'pre battle':
+    if status == 'pre battle2':
         screen.fill(white)
         pygame.display.update()
 
