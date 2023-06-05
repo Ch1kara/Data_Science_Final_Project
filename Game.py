@@ -457,14 +457,14 @@ class Pokedex:
     # new function
     def select_poke(self):
         """Creates buttons to select which Pokémon you want to battle with"""
-        posx = [20,340,660,20,340,660]
-        posy = [535,535,535,630,630,630]
-        counter = 0
+        x = [20,340,660,20,340,660]
+        y = [535,535,535,630,630,630]
+        num = 0
         poke_buttons = []
-        for poke in self.party:
-            poke = create_button(posx[counter], posy[counter], 320, 95, str(poke))
+        for thing in self.party:
+            thing = create_button(x[num], y[num], 320, 95, thing.name)
             poke_buttons.append(poke)
-            counter += 1
+            num += 1
         return poke_buttons
 
 
@@ -485,6 +485,18 @@ battle_poke = None
 pokedex = Pokedex()
 status = 'starter'
 move_buttons = []
+
+# Makes Pokémon into Pokémon class object
+bulbasaur = Pokemon("Bulbasaur", 50, 225)
+squirtle = Pokemon('Squirtle', 350, 225)
+charmander = Pokemon("Charmander", 650, 225)
+starters = [bulbasaur, squirtle, charmander]
+# Making buttons (Still need to change the set_sprite because Image button needs the file name not the actual image)
+starter1 = ImageButton(-50, 75, bulbasaur.set_sprite("front"), 1.5, "bulbasaur")
+starter2 = ImageButton(250, 50, charmander.set_sprite("front"), 1.5, "charmander")
+starter3 = ImageButton(550, 50, squirtle.set_sprite("front"), 1.5, "squirtle")
+s_image = [starter1, starter2, starter3]
+
 while status != 'quit':
 
     # Should be at the start, quits game if red x at top of screen is hit
@@ -502,27 +514,11 @@ while status != 'quit':
 
         # Starter selection screen
         if status == 'starter':
-            # Makes Pokémon into Pokémon class object
-            bulbasaur = Pokemon("Bulbasaur", 50, 225)
-            squirtle = Pokemon('Squirtle', 350, 225)
-            charmander = Pokemon("Charmander", 650, 225)
-            # Making buttons (Still need to change the set_sprite because Image button needs the file name not the actual image)
-            starter1 = ImageButton(-50, 75, bulbasaur.set_sprite("front"), 1.5, "bulbasaur")
-            starter2 = ImageButton(250, 50, charmander.set_sprite("front"), 1.5, "charmander")
-            starter3 = ImageButton(550, 50, squirtle.set_sprite("front"), 1.5, "squirtle")
-            screen.fill(white)
-            starter1.draw() # Drawing the buttons on the screen
-            starter2.draw()
-            starter3.draw()
-            message("Choose your Pokémon!")
-
-            # Checking if player picked a starter
-            if starter1 == "bulbasaur":
-                starter = bulbasaur
-            elif starter2 == "charmander":
-                starter = charmander
-            elif starter3 == "squirtle":
-                starter = squirtle
+            if event.type == MOUSEBUTTONDOWN:
+                click_loc = event.pos
+                for i in range(len(starters)):
+                    if starters[i].get_rect().collidepoint(click_loc):
+                        starter = starters[i]
 
             # Need to see if a starter is selected before moving on to the next stage.
             if starter is not None:
@@ -559,6 +555,14 @@ while status != 'quit':
                     status = 'trainer faint'
                 else:
                     status = 'trainer turn'
+
+    if status == 'starter':
+        screen.fill(white)
+        starter1.draw()  # Drawing the buttons on the screen
+        starter2.draw()
+        starter3.draw()
+        message("Choose your Pokémon!")
+
 
     if status == 'pre battle':
         screen.fill(white)
