@@ -173,6 +173,7 @@ CHARACTERS = {
                'Defense': 90, 'Speed': 130, 'Experience': 220}
 }
 
+
 # new function
 def message(message):
     """Displays messages in game by creating objects"""
@@ -222,19 +223,20 @@ def create_button(x, y, width, height, text):
     pygame.display.update()
     return button
 
+
 class ImageButton():
     def __init__(self, x, y, image, scale, value):
         width = image.get_width()
         height = image.get_height()
-        self.image = pygame.transform.scale(image, (int(width * scale), int(height*scale)))
+        self.image = pygame.transform.scale(image, (int(width * scale), int(height * scale)))
         self.rect = self.image.get_rect()
-        self.rect.topleft = (x,y)
+        self.rect.topleft = (x, y)
         self.clicked = False
         self.value = value
 
     def draw(self):
         """Draws the button on the screen"""
-        #get pos
+        # get pos
         pos = pygame.mouse.get_pos()
 
         screen.blit(self.image, (self.rect.x, self.rect.y))
@@ -247,11 +249,14 @@ class ImageButton():
         if pygame.mouse.get_pressed()[0] == 0:
             self.clicked = False
 
+
 def ai():
     '''Creates a trainer that chooses a random pokemon to battle you'''
-    pokemonz =['Pikachu','Charizard','Squirtle','Jigglypuff','Gengar','Magnemite','Bulbasaur','Charmander','Beedrill','Golem','Dewgong','Hypno','Cleffa','Cutiefly','Mewtwo']
+    pokemonz = ['Pikachu', 'Charizard', 'Squirtle', 'Jigglypuff', 'Gengar', 'Magnemite', 'Bulbasaur', 'Charmander',
+                'Beedrill', 'Golem', 'Dewgong', 'Hypno', 'Cleffa', 'Cutiefly', 'Mewtwo']
     opponent = rand.choice(pokemonz)
     return opponent
+
 
 class Pokemon(pygame.sprite.Sprite):
     def __init__(self, name, x, y):
@@ -339,7 +344,6 @@ class Pokemon(pygame.sprite.Sprite):
         self.image = pygame.transform.scale(self.image, (nwidth, nheight))
         return self.image
 
-
     def battle_priority(self, opponent):
         '''Determines whether you or the opponent attacks first'''
         if self.Speed > opponent.Speed:
@@ -350,25 +354,25 @@ class Pokemon(pygame.sprite.Sprite):
     # new function
     def move_buttons(self):
         """Creates the 3-4 move buttons for a Pokémon"""
-        posx = [250,750,250,750]
-        posy = [94,94,281,281]
+        posx = [250, 750, 250, 750]
+        posy = [94, 94, 281, 281]
         counter = 0
         move_buttons = []
         for move in self.Moves:
-            button = create_button(posx[counter], posy[counter], 450, 175, str(move)) # Make 3 to 4 buttons for moves
+            button = create_button(posx[counter], posy[counter], 450, 175, str(move))  # Make 3 to 4 buttons for moves
             move_buttons.append(button)
             counter += 1
         return move_buttons
 
     # new function
-    def paint(self, trans = 255):
+    def paint(self, trans=255):
         """Actually puts the image in the game, as well as covering transparency"""
         sprite = self.image.copy()
-        details = (255, 255, 255, trans) # Gets image color and transparency values
-        sprite.fill(details, None, pygame.BLEND_RGBA_MULT) # None selects image, BLEND_RBGA makes image transparent
-        screen.blit(sprite, (self.x, self.y)) # Blit puts image in game, position puts where in game
+        details = (255, 255, 255, trans)  # Gets image color and transparency values
+        sprite.fill(details, None, pygame.BLEND_RGBA_MULT)  # None selects image, BLEND_RBGA makes image transparent
+        screen.blit(sprite, (self.x, self.y))  # Blit puts image in game, position puts where in game
 
-    #new function
+    # new function
     def get_rect(self):
         """Creates a rectangle object around the displayed image"""
         return pygame.Rect(self.x, self.y, self.image.get_width(), self.image.get_height())
@@ -409,9 +413,10 @@ class Pokemon(pygame.sprite.Sprite):
         # draws bars into the actual game
         screen.blit(bar, (x, y))
         screen.blit(current_bar, (x, y))
-        screen.blit(text, (x, y+30))
+        screen.blit(text, (x, y + 30))
 
         # new function
+
     def xp_text(self, x, y):
         """Draws xp text next to the health bars"""
         # finds the max xp for the given level
@@ -428,16 +433,17 @@ class Pokemon(pygame.sprite.Sprite):
         text_rect = text.get_rect(topleft=(x + 120, y + 30))
         screen.blit(text, text_rect)
 
+
 class Pokedex:
     def __init__(self):
         """Initializes the attributes for the Pokedex Class"""
         self.party = []
 
-    def add_mon(self,mon):
+    def add_mon(self, mon):
         """Adds a pokemon to your pokedex/party"""
         self.party.append(mon)
 
-    def mon_faint(self,mon):
+    def mon_faint(self, mon):
         """Removes a pokemon from your pokedex/party when it faints"""
         self.party.remove(mon)
 
@@ -445,7 +451,7 @@ class Pokedex:
         """Choose which one of your pokemon you want to fight with"""
         print(f"Your current party: {self.party}")
         fighter = int(input("Choose your Pokemon for the next battle!(number): "))
-        choice = self.party[fighter-1]
+        choice = self.party[fighter - 1]
         print(f"You chose {choice}!")
         return choice
 
@@ -456,13 +462,12 @@ class Pokedex:
     # new function
     def select_poke(self):
         """Creates buttons to select which Pokémon you want to battle with"""
-        x = [20,340,660,20,340,660]
-        y = [535,535,535,630,630,630]
+        x = [20, 340, 660, 20, 340, 660]
+        y = [535, 535, 535, 630, 630, 630]
         num = 0
         for thing in self.party:
             create_button(x[num], y[num], 320, 95, str(thing.name))
             num += 1
-
 
     def __str__(self):
         """Returns your party"""
@@ -487,6 +492,7 @@ bulbasaur = Pokemon("Bulbasaur", 50, 225)
 squirtle = Pokemon('Squirtle', 350, 225)
 charmander = Pokemon("Charmander", 650, 225)
 starters = [bulbasaur, squirtle, charmander]
+
 # Making buttons (Still need to change the set_sprite because Image button needs the file name not the actual image)
 starter1 = ImageButton(-50, 75, bulbasaur.set_sprite("front"), 1.5, "bulbasaur")
 starter2 = ImageButton(250, 50, charmander.set_sprite("front"), 1.5, "charmander")
@@ -509,59 +515,42 @@ while status != 'quit':
                 status = 'quit'
 
         # Starter selection screen
-
-        if status == "title":
-            screen.fill(white)
-            font = pygame.font.SysFont("squaresans", 60)
-            text = font.render("Welcome to the Wonderful World of Pokemon", True, black)
-            text_rect = text.get_rect()
-            text_rect.x = 50
-            text_rect.y = 100
-
-            # connecting the text with the rectangle as one object
-            screen.blit(text, text_rect)
-            # updates this portion of the screen
-            pygame.display.update()
-            start_button = create_button(450, 375, 100, 100, "Start")
-            if event.type == MOUSEBUTTONDOWN:
-                click_loc = event.pos
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            click_loc = event.pos
+            if status == "title":
                 if start_button.collidepoint(click_loc):
-                    status = "starter"
                     time.sleep(1)
+                    status = "starter"
 
-        elif status == 'starter':
-            if event.type == MOUSEBUTTONDOWN:
-                click_loc = event.pos
+            elif status == 'starter':
                 for i in range(len(starters)):
                     if starters[i].get_rect().collidepoint(click_loc):
                         starter = starters[i]
 
-            # Need to see if a starter is selected before moving on to the next stage.
-            if starter is not None:
-                starter.Level = 5
-                pokedex.add_mon(starter)
-                battle_poke = starter
-                # enemy trainer
-                enemy = ai()
-                trainer = Pokemon(enemy, 250, -50)
+                # Need to see if a starter is selected before moving on to the next stage.
+                if starter is not None:
+                    starter.Level = 5
+                    pokedex.add_mon(starter)
+                    battle_poke = starter
+                    # enemy trainer
+                    enemy = ai()
+                    trainer = Pokemon(enemy, 250, -50)
 
-                status = 'pre battle'
+                    status = 'pre battle'
 
-        # elif status == 'pre battle':
-        #     # select Pokémon buttons appear
-        #     if event.type == pygame.MOUSEBUTTONDOWN:
-        #         click_loc = event.pos
-        #         for i in range(len(pokedex.party)):
-        #             party = pokedex.select_poke()
-        #             poke = party[i]
-        #
-        #             if poke.collidepoint(click_loc):
-        #                 battle_poke = pokedex.party[i]
+            # elif status == 'pre battle':
+            #     # select Pokémon buttons appear
+            #     if event.type == pygame.MOUSEBUTTONDOWN:
+            #         click_loc = event.pos
+            #         for i in range(len(pokedex.party)):
+            #             party = pokedex.select_poke()
+            #             poke = party[i]
+            #
+            #             if poke.collidepoint(click_loc):
+            #                 battle_poke = pokedex.party[i]
 
-        elif status == 'player turn':
-            # create buttons
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                click_loc = event.pos
+            elif status == 'player turn':
+                # create buttons
                 for i in range(len(battle_poke.Moves)):
                     button = move_buttons[i]
                     if button.collidepoint(click_loc):
@@ -572,6 +561,17 @@ while status != 'quit':
                         status = 'trainer faint'
                     else:
                         status = 'trainer turn'
+    if status == "title":
+        screen.fill(white)
+        font = pygame.font.SysFont("squaresans", 60)
+        text = font.render("Welcome to the Wonderful World of Pokemon", True, black)
+        text_rect = text.get_rect()
+        text_rect.x = 50
+        text_rect.y = 100
+        start_button = create_button(450, 375, 100, 100, "Start")
+
+        # connecting the text with the rectangle as one object
+        screen.blit(text, text_rect)
 
     if status == 'starter':
         screen.fill(white)
@@ -581,7 +581,6 @@ while status != 'quit':
         message("Choose your Pokémon!")
 
         pygame.display.update()
-
 
     if status == 'pre battle':
         screen.fill(white)
@@ -643,12 +642,12 @@ while status != 'quit':
         trainer.xp_text(100, 100)
 
         # creating the move buttons
-        posx = [250, 750, 250, 750]
-        posy = [500, 500, 650, 650]
+        posx = [100, 560, 100, 560]
+        posy = [400, 400, 585, 585]
         counter = 0
         message('')
         for move in battle_poke.Moves:
-            button = create_button(posx[counter], posy[counter], 450, 175, move)  # Make 3 to 4 buttons for moves
+            button = create_button(posx[counter], posy[counter], 450, 100, move)  # Make 3 to 4 buttons for moves
             move_buttons.append(button)
             counter += 1
 
