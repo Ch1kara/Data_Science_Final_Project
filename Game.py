@@ -460,12 +460,9 @@ class Pokedex:
         x = [20,340,660,20,340,660]
         y = [535,535,535,630,630,630]
         num = 0
-        poke_buttons = []
         for thing in self.party:
-            thing = create_button(x[num], y[num], 320, 95, thing.name)
-            poke_buttons.append(poke)
+            create_button(x[num], y[num], 320, 95, str(thing.name))
             num += 1
-        return poke_buttons
 
 
     def __str__(self):
@@ -524,23 +521,23 @@ while status != 'quit':
             if starter is not None:
                 starter.Level = 5
                 pokedex.add_mon(starter)
+                battle_poke = starter
                 # enemy trainer
                 enemy = ai()
                 trainer = Pokemon(enemy, 250, -50)
 
                 status = 'pre battle'
 
-        elif status == 'pre battle':
-            # select Pokémon buttons appear
-            pokedex.select_poke()
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                click_loc = event.pos
-                for i in range(len(pokedex.select_poke())):
-                    party = pokedex.select_poke()
-                    poke = party[i]
-
-                    if poke.collidepoint(click_loc):
-                        battle_poke = pokedex.party[i]
+        # elif status == 'pre battle':
+        #     # select Pokémon buttons appear
+        #     if event.type == pygame.MOUSEBUTTONDOWN:
+        #         click_loc = event.pos
+        #         for i in range(len(pokedex.party)):
+        #             party = pokedex.select_poke()
+        #             poke = party[i]
+        #
+        #             if poke.collidepoint(click_loc):
+        #                 battle_poke = pokedex.party[i]
 
         elif status == 'player turn':
             # create buttons
@@ -562,6 +559,8 @@ while status != 'quit':
         starter2.draw()
         starter3.draw()
         message("Choose your Pokémon!")
+
+        pygame.display.update()
 
 
     if status == 'pre battle':
@@ -594,6 +593,8 @@ while status != 'quit':
 
         transparency = 0
         while transparency < 255:
+            screen.fill(white)
+            trainer.paint()
             battle_poke.paint(transparency)
             transparency += 1
             message(f"You sent out {battle_poke.name}!")
