@@ -484,6 +484,7 @@ pokedex.add_mon(Mewtwo)
 pokedex.add_mon(Charizard)
 status = 'title'
 move_buttons = []
+battle_choices = []
 
 
 # Makes Pokémon into Pokémon class object
@@ -538,28 +539,18 @@ while status != 'quit':
                     status = 'selection'
 
             elif status == 'selection':
-                screen.fill(white)
-                message("A trainer has appeared ... Choose your battle Pokémon")
-                time.sleep(2)
-                message('')
-                # select Pokémon buttons appear
-                x = [15, 340, 665, 15, 340, 665]
-                y = [535, 535, 535, 630, 630, 630]
-                num = 0
                 for i in range(len(pokedex.party)):
-                    # Creating buttons for each pokemon in the party
-                    button = create_button(x[i], y[i], 320, 95, str(pokedex.party[i].name))
-                    pygame.draw.rect(screen, black, (x[i] - 3, y[i] - 3, 326, 101), 3)
-                    num += 1
+                    # loops through each pokemon(in party) button to see which one was clicked
+                    poke_button = battle_choices[i]
                     # If click where button is, then new active pokemon
-                    if button.collidepoint(click_loc):
+                    if poke_button.collidepoint(click_loc):
                         battle_poke = pokedex.party[i]
-                        message(f"You sent out {battle_poke}")
+                        message(f"You sent out {battle_poke.name}")
                         time.sleep(3)
                         status = "pre battle"
 
             elif status == 'player turn':
-                # create buttons
+                # loops through each button to see which one was clicked
                 for i in range(len(battle_poke.Moves)):
                     button = move_buttons[i]
                     if button.collidepoint(click_loc):
@@ -576,6 +567,21 @@ while status != 'quit':
         pygame.draw.rect(screen, black, (447, 372, 106, 106), 3)
         start_button = create_button(450, 375, 100, 100, "Start")
         pygame.display.update()
+
+    if status == 'selection':
+        screen.fill(white)
+        message('')
+        # select Pokémon buttons appear
+        x = [15, 340, 665, 15, 340, 665]
+        y = [535, 535, 535, 630, 630, 630]
+        counter = 0
+        for pokemon in pokedex.party:
+            # Creating buttons for each pokemon in the party
+            button = create_button(x[counter], y[counter], 320, 95, pokemon.name)
+            # black outline of each button
+            pygame.draw.rect(screen, black, (x[counter], y[counter], 320, 95), 3)
+            battle_choices.append(button)
+            counter += 1
 
     if status == 'starter':
         screen.fill(white)
