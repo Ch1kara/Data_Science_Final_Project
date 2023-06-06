@@ -434,49 +434,49 @@ class Pokemon(pygame.sprite.Sprite):
         screen.blit(text, text_rect)
 
 
-#class Pokedex:
-  #  def __init__(self):
-    #    """Initializes the attributes for the Pokedex Class"""
-     #   self.party = []
+class Pokedex:
+   def __init__(self):
+       """Initializes the attributes for the Pokedex Class"""
+       self.party = []
 
-   # def add_mon(self, mon):
-   #    """Adds a pokemon to your pokedex/party"""
-    #    self.party.append(mon)
+   def add_mon(self, mon):
+      """Adds a pokemon to your pokedex/party"""
+       self.party.append(mon)
 
-   # def mon_faint(self, mon):
-     #   """Removes a pokemon from your pokedex/party when it faints"""
-     #   self.party.remove(mon)
+   def mon_faint(self, mon):
+       """Removes a pokemon from your pokedex/party when it faints"""
+       self.party.remove(mon)
 
-   # def choose_fighter(self):
-     #   """Choose which one of your pokemon you want to fight with"""
-     #   print(f"Your current party: {self.party}")
-    #    fighter = int(input("Choose your Pokemon for the next battle!(number): "))
-    #   choice = self.party[fighter - 1]
-    #    print(f"You chose {choice}!")
-     #   return choice
+   def choose_fighter(self):
+       """Choose which one of your pokemon you want to fight with"""
+       print(f"Your current party: {self.party}")
+       fighter = int(input("Choose your Pokemon for the next battle!(number): "))
+      choice = self.party[fighter - 1]
+       print(f"You chose {choice}!")
+       return choice
 
-  #  def checklen(self):
-  #      """Returns the length of the party"""
-  #     return len(self.party)
+   def checklen(self):
+       """Returns the length of the party"""
+      return len(self.party)
 
-    # new function
-  ##  def select_poke(self):
-  #      """Creates buttons to select which Pokémon you want to battle with"""
-   #     x = [20, 340, 660, 20, 340, 660]
-   #     y = [535, 535, 535, 630, 630, 630]
-   #     num = 0
-    #    for thing in self.party:
-   #         create_button(x[num], y[num], 320, 95, str(thing.name))
-   #         num += 1
+    new function
+  #  def select_poke(self):
+       """Creates buttons to select which Pokémon you want to battle with"""
+       x = [20, 340, 660, 20, 340, 660]
+       y = [535, 535, 535, 630, 630, 630]
+       num = 0
+       for thing in self.party:
+           create_button(x[num], y[num], 320, 95, str(thing.name))
+           num += 1
 
- #   def __str__(self):
-  #      """Returns your party"""
-  #      string = ""
-  #      counter = 1
-  #      for poke in self.party:
-   #         string += (f"{poke.__repr__()}({counter})")
-   #         counter += 1
-   #     return string
+   def __str__(self):
+       """Returns your party"""
+       string = ""
+       counter = 1
+       for poke in self.party:
+           string += (f"{poke.__repr__()}({counter})")
+           counter += 1
+       return string
 
 
 # Game Loop
