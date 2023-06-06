@@ -229,6 +229,8 @@ class ImageButton():
         width = image.get_width()
         height = image.get_height()
         self.image = pygame.transform.scale(image, (int(width * scale), int(height * scale)))
+        self.width = self.image.get_width()
+        self.height = self.image.get_height()
         self.rect = self.image.get_rect()
         self.rect.topleft = (x, y)
         self.clicked = False
@@ -236,8 +238,16 @@ class ImageButton():
 
     def draw(self):
         """Draws the button on the screen"""
-        # get pos
+        # highlight border gold if cursor hovers over it
         pos = pygame.mouse.get_pos()
+        cursor_hover = self.rect.collidepoint(pos)
+
+        if cursor_hover:
+            pygame.draw.rect(screen, white, self.rect)
+            pygame.draw.rect(screen, gold, self.rect, 3)
+        else:
+            pygame.draw.rect(screen, white, self.rect)
+            pygame.draw.rect(screen, white, self.rect, 3)
 
         screen.blit(self.image, (self.rect.x, self.rect.y))
 
@@ -338,7 +348,7 @@ class Pokemon(pygame.sprite.Sprite):
         # https: // www.pygame.org / docs / ref / image.html  # pygame.image.load
 
         # scales the image
-        scale = self.size / self.image.get_width() + 2
+        scale = self.size / self.image.get_width() + 1.2
         nwidth = self.image.get_width() * scale
         nheight = self.image.get_height() * scale
         self.image = pygame.transform.scale(self.image, (nwidth, nheight))
@@ -449,6 +459,18 @@ class Pokedex():
         """Returns the length of the party"""
         return len(self.party)
 
+def title():
+    '''Title screen message'''
+    font = pygame.font.SysFont("squaresans", 60)
+    text = font.render("Welcome to the Wonderful World of Pokemon", True, black)
+    text_rect = text.get_rect()
+    text_rect.x = 50
+    text_rect.y = 150
+    pygame.draw.rect(screen, black, (text_rect.x - 13, text_rect.y - 13, text.get_width() + 26, text.get_height() + 26), 3)
+
+    # connecting the text with the rectangle as one object
+    screen.blit(text, text_rect)
+    pygame.display.update()
 
 
 # Game Loop
@@ -471,9 +493,9 @@ charmander = Pokemon("Charmander", 650, 225)
 starters = [bulbasaur, charmander, squirtle]
 
 # Making buttons (Still need to change the set_sprite because Image button needs the file name not the actual image)
-starter1 = ImageButton(-50, 75, bulbasaur.set_sprite("front"), 1.5, "bulbasaur")
-starter2 = ImageButton(250, 50, charmander.set_sprite("front"), 1.5, "charmander")
-starter3 = ImageButton(550, 50, squirtle.set_sprite("front"), 1.5, "squirtle")
+starter1 = ImageButton(4, 100, bulbasaur.set_sprite("front"), 1.2, "bulbasaur")
+starter2 = ImageButton(335, 100, charmander.set_sprite("front"), 1.2, "charmander")
+starter3 = ImageButton(666, 100, squirtle.set_sprite("front"), 1.2, "squirtle")
 s_image = [starter1, starter2, starter3]
 
 while status != 'quit':
@@ -503,33 +525,38 @@ while status != 'quit':
                 for i in range(len(starters)):
                     if starters[i].get_rect().collidepoint(click_loc):
                         starter = starters[i]
-                        time.sleep(1)
 
                 # Need to see if a starter is selected before moving on to the next stage.
                 if starter is not None:
                     starter.Level = 5
                     pokedex.add_mon(starter)
-                    battle_poke = starter
                     # enemy trainer
                     enemy = ai()
                     trainer = Pokemon(enemy, 250, -50)
+                    time.sleep(2)
 
-                    status = 'pre battle'
+                    status = 'selection'
 
-            elif status == 'pre battle':
+            elif status == 'selection':
                 screen.fill(white)
-                #select Pokémon buttons appear
-                x = [20, 340, 660, 20, 340, 660]
+                message("A trainer has appeared ... Choose your battle Pokémon")
+                time.sleep(2)
+                message('')
+                # select Pokémon buttons appear
+                x = [15, 340, 665, 15, 340, 665]
                 y = [535, 535, 535, 630, 630, 630]
                 num = 0
                 for i in range(len(pokedex.party)):
-                    #Creating buttons for each pokemon in the party
+                    # Creating buttons for each pokemon in the party
                     button = create_button(x[i], y[i], 320, 95, str(pokedex.party[i].name))
-                    num +=1
-                    #If click where button is, then new active pokemon
+                    pygame.draw.rect(screen, black, (x[i] - 3, y[i] - 3, 326, 101), 3)
+                    num += 1
+                    # If click where button is, then new active pokemon
                     if button.collidepoint(click_loc):
                         battle_poke = pokedex.party[i]
-                        status = "pre battle2"
+                        message(f"You sent out {battle_poke}")
+                        time.sleep(3)
+                        status = "pre battle"
 
             elif status == 'player turn':
                 # create buttons
@@ -545,26 +572,27 @@ while status != 'quit':
                         status = 'trainer turn'
     if status == "title":
         screen.fill(white)
-        font = pygame.font.SysFont("squaresans", 60)
-        text = font.render("Welcome to the Wonderful World of Pokemon", True, black)
-        text_rect = text.get_rect()
-        text_rect.x = 50
-        text_rect.y = 100
+        title()
+        pygame.draw.rect(screen, black, (447, 372, 106, 106), 3)
         start_button = create_button(450, 375, 100, 100, "Start")
-
-        # connecting the text with the rectangle as one object
-        screen.blit(text, text_rect)
+        pygame.display.update()
 
     if status == 'starter':
         screen.fill(white)
         starter1.draw()  # Drawing the buttons on the screen
         starter2.draw()
         starter3.draw()
-        message("Choose your Pokémon!")
+        # black outline around each pokemon using ImageButton class __init__ defintiion
+        width = starter1.width
+        height = starter1.height
+        pygame.draw.rect(screen, black, (1, 97, width + 6, height + 6), 3)
+        pygame.draw.rect(screen, black, (332, 97, width + 6, height + 6), 3)
+        pygame.draw.rect(screen, black, (663, 97, width + 6, height + 6), 3)
+        message("Choose your starter Pokémon!")
 
         pygame.display.update()
 
-    if status == 'pre battle2':
+    if status == 'pre battle':
         screen.fill(white)
         pygame.display.update()
 
@@ -630,6 +658,7 @@ while status != 'quit':
         message('')
         for move in battle_poke.Moves:
             button = create_button(posx[counter], posy[counter], 450, 100, move)  # Make 3 to 4 buttons for moves
+            # black outline of buttons
             pygame.draw.rect(screen, black, (posx[counter], posy[counter], 450, 100), 3)
             move_buttons.append(button)
             counter += 1
