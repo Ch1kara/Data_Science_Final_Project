@@ -545,7 +545,7 @@ while status != 'quit':
                     # If click where button is, then new active pokemon
                     if poke_button.collidepoint(click_loc):
                         battle_poke = pokedex.party[i]
-                        message(f"You sent out {battle_poke.name}")
+                        message(f"You chose {battle_poke.name}")
                         time.sleep(3)
                         status = "pre battle"
 
@@ -556,6 +556,7 @@ while status != 'quit':
                     if button.collidepoint(click_loc):
                         move = battle_poke.Moves[i]
                         battle_poke.use_attack(trainer, move)
+                        time.sleep(2)
 
                     if trainer.current_HP == 0:
                         status = 'trainer faint'
@@ -618,7 +619,7 @@ while status != 'quit':
             # update screen so trainer Pokémon will appear before player Pokémon
             pygame.display.update()
 
-        time.sleep(1)
+        time.sleep(2)
 
         # player repositioning and fade
         battle_poke.x = -50
@@ -690,6 +691,7 @@ while status != 'quit':
         move = battle_poke.opp_move(trainer)
         trainer.use_attack(battle_poke, move)
         message(f"{trainer.name} used {move}!")
+        time.sleep(2)
 
         if battle_poke.current_HP == 0:
             status = 'player faint'
