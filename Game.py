@@ -332,7 +332,7 @@ class Pokemon(pygame.sprite.Sprite):
         elif self.move_type(opponent, move) == 0.5:
             message(f"{self.name} used {move} .... it wasn't very effective")
         else:
-            message(f"{self.name} used {move}")
+            message(f"{self.name} used {move}!")
 
         time.sleep(1.5)
 
@@ -416,9 +416,9 @@ class Pokemon(pygame.sprite.Sprite):
 
         # makes bar pygame objects and positions them with text
         # self.bar_x and self.bar_y are defined in the game loop
-        # text_rect = text.get_rect((x, y+30))
-        # bar_rect = bar.get_rect(topleft=(x, y))
-        # current_bar_rect = current_bar.get_rect(topleft=(x, y))
+        text_rect = text.get_rect(topleft=(x, y+30))
+        bar_rect = bar.get_rect(topleft=(x, y))
+        current_bar_rect = current_bar.get_rect(topleft=(x, y))
 
         # draws bars into the actual game
         screen.blit(bar, (x, y))
@@ -448,9 +448,11 @@ class Pokedex():
     def __init__(self):
         """Initializes the attributes for the Pokedex Class"""
         self.party = []
+
     def add_mon(self, mon):
         """Adds a pokemon to your pokedex/party"""
         self.party.append(mon)
+
     def mon_faint(self, mon):
         """Removes a pokemon from your pokedex/party when it faints"""
         self.party.remove(mon)
@@ -459,33 +461,43 @@ class Pokedex():
         """Returns the length of the party"""
         return len(self.party)
 
-def title():
-    '''Title screen message'''
-    font = pygame.font.SysFont("squaresans", 60)
-    text = font.render("Welcome to the Wonderful World of Pokemon", True, black)
+
+def title(message, size):
+    '''Title screen message given message and size of font'''
+    font = pygame.font.SysFont("squaresans", size)
+    text = font.render(message, True, black)
     text_rect = text.get_rect()
     text_rect.x = 50
     text_rect.y = 150
-    pygame.draw.rect(screen, black, (text_rect.x - 13, text_rect.y - 13, text.get_width() + 26, text.get_height() + 26), 3)
+    pygame.draw.rect(screen, black, (text_rect.x - 13, text_rect.y - 13, text.get_width() + 26, text.get_height() + 26),
+                     3)
 
     # connecting the text with the rectangle as one object
     screen.blit(text, text_rect)
     pygame.display.update()
 
 
-# Game Loop
+# https://stackoverflow.com/questions/28005641/how-to-add-a-background-image-into-pygame
+def Background(image_file, location):
+    '''Puts a background on the screen'''
+    image = pygame.image.load(image_file)
+    image_rect = image.get_rect()
+    left, top = location
+    screen.blit(image, image_rect)
+
+# defining stuff needed for inside the while loop + some extra pokemon for your party
 starter = None
 trainer = None
 battle_poke = None
 Charizard = Pokemon("Charizard", 50, 225)
 Mewtwo = Pokemon("Mewtwo", 175, 300)
+Mewtwo.Level = 1000 # god mode
 pokedex = Pokedex()
 pokedex.add_mon(Mewtwo)
 pokedex.add_mon(Charizard)
 status = 'title'
 move_buttons = []
 battle_choices = []
-
 
 # Makes Pokémon into Pokémon class object
 bulbasaur = Pokemon("Bulbasaur", 50, 225)
@@ -499,6 +511,7 @@ starter2 = ImageButton(335, 100, charmander.set_sprite("front"), 1.2, "charmande
 starter3 = ImageButton(666, 100, squirtle.set_sprite("front"), 1.2, "squirtle")
 s_image = [starter1, starter2, starter3]
 
+# Game Loop
 while status != 'quit':
 
     # Should be at the start, quits game if red x at top of screen is hit
@@ -564,28 +577,15 @@ while status != 'quit':
                         status = 'trainer turn'
     if status == "title":
         screen.fill(white)
-        title()
+        Background('images/gen_background.png', [0, 0])
+        title('Welcome to the Wonderful World of Pokemon', 60)
         pygame.draw.rect(screen, black, (447, 372, 106, 106), 3)
         start_button = create_button(450, 375, 100, 100, "Start")
         pygame.display.update()
 
-    if status == 'selection':
-        screen.fill(white)
-        message('')
-        # select Pokémon buttons appear
-        x = [15, 340, 665, 15, 340, 665]
-        y = [535, 535, 535, 630, 630, 630]
-        counter = 0
-        for pokemon in pokedex.party:
-            # Creating buttons for each pokemon in the party
-            button = create_button(x[counter], y[counter], 320, 95, pokemon.name)
-            # black outline of each button
-            pygame.draw.rect(screen, black, (x[counter], y[counter], 320, 95), 3)
-            battle_choices.append(button)
-            counter += 1
-
     if status == 'starter':
         screen.fill(white)
+        Background('images/gen_background.png', [0, 0])
         starter1.draw()  # Drawing the buttons on the screen
         starter2.draw()
         starter3.draw()
@@ -599,47 +599,75 @@ while status != 'quit':
 
         pygame.display.update()
 
+    if status == 'selection':
+        screen.fill(white)
+        Background('images/battle_background.png', [0, 0])
+        title('A trainer has appeared ... choose your Pokémon!', 55)
+        message('')
+        # select Pokémon buttons appear
+        x = [15, 340, 665, 15, 340, 665]
+        y = [535, 535, 535, 630, 630, 630]
+        counter = 0
+        for pokemon in pokedex.party:
+            # Creating buttons for each pokemon in the party
+            button = create_button(x[counter], y[counter], 320, 95, pokemon.name)
+            # black outline of each button
+            pygame.draw.rect(screen, black, (x[counter], y[counter], 320, 95), 3)
+            battle_choices.append(button)
+            counter += 1
+
     if status == 'pre battle':
         screen.fill(white)
+        Background('images/battle_background.png', [0, 0])
         pygame.display.update()
 
         # trainer repositioning and fading in
-        trainer.x = 450
-        trainer.y = -100
-        trainer.size = 350
+        trainer.x = 520
+        trainer.y = 20
+        trainer.size = 300
         trainer.set_sprite('front')
 
-        # makes Pokémon fade in using the trans feature in paint
-        transparency = 0
-        while transparency < 255:
-            screen.fill(white)
-            trainer.paint(transparency)
-            transparency += 1
-            message(f"Trainer sent out {trainer.name}!")
-            # update screen so trainer Pokémon will appear before player Pokémon
-            pygame.display.update()
-
+        # # makes Pokémon fade in using the trans feature in paint (doesn't work)
+        # transparency = 0
+        # while transparency < 255:
+        #     screen.fill(white)
+        #     Background('images/battle_background.png', [0, 0])
+        #     trainer.paint(transparency)
+        #     transparency += 1
+        #     message(f"Trainer sent out {trainer.name}!")
+        #     # update screen so trainer Pokémon will appear before player Pokémon
+        #     pygame.display.update()
+        #
+        # time.sleep(2)
+        trainer.paint()
+        message(f"Trainer sent out {trainer.name}!")
         time.sleep(2)
 
         # player repositioning and fade
-        battle_poke.x = -50
-        battle_poke.y = 100
-        battle_poke.size = 350
+        battle_poke.x = 0
+        battle_poke.y = 160
+        battle_poke.size = 300
         battle_poke.set_sprite('back')
 
-        transparency = 0
-        while transparency < 255:
-            screen.fill(white)
-            trainer.paint()
-            battle_poke.paint(transparency)
-            transparency += 1
-            message(f"You sent out {battle_poke.name}!")
+        # doesn't work
+        # transparency = 0
+        # while transparency < 255:
+        #     screen.fill(white)
+        #     Background('images/battle_background.png', [0, 0])
+        #     trainer.paint()
+        #     battle_poke.paint(transparency)
+        #     transparency += 1
+        #     message(f"You sent out {battle_poke.name}!")
+        battle_poke.paint()
+        message(f"You sent out {battle_poke.name}!")
+        time.sleep(2)
+
 
         # drawing the hp and xp of the player and trainer
-        battle_poke.hp_bar(400, 400)
-        trainer.hp_bar(200, 100)
-        battle_poke.xp_text(400, 400)
-        trainer.xp_text(200, 100)
+        battle_poke.hp_bar(420, 400)
+        trainer.hp_bar(700, 175)
+        battle_poke.xp_text(420, 400)
+        trainer.xp_text(500, 175)
 
         priority = battle_poke.battle_priority(trainer)
         if priority:
@@ -651,6 +679,7 @@ while status != 'quit':
 
     if status == 'player turn':
         screen.fill(white)
+        Background('images/battle_background.png', [0, 0])
         battle_poke.paint()
         trainer.paint()
         battle_poke.hp_bar(400, 400)
@@ -669,11 +698,12 @@ while status != 'quit':
             pygame.draw.rect(screen, black, (posx[counter], posy[counter], 450, 100), 3)
             move_buttons.append(button)
             counter += 1
-
+        time.sleep(3)
         pygame.display.update()
 
     if status == 'trainer turn':
         screen.fill(white)
+        Background('images/battle_background.png', [0, 0])
         battle_poke.paint()
         trainer.paint()
         battle_poke.hp_bar(500, 400)
@@ -682,15 +712,18 @@ while status != 'quit':
         trainer.xp_text(100, 100)
         pygame.display.update()
 
-        message('What will trainer do?')
-        time.sleep(1)
+        # buffer zone between player and trainer turns
+        message('')
+        time.sleep(2)
+
+        message(f'Trainer turn: What will {trainer.name} do?')
+        time.sleep(3)
 
         message('.....')
-        time.sleep(1)
+        time.sleep(2)
 
         move = battle_poke.opp_move(trainer)
         trainer.use_attack(battle_poke, move)
-        message(f"{trainer.name} used {move}!")
         time.sleep(2)
 
         if battle_poke.current_HP == 0:
@@ -706,6 +739,7 @@ while status != 'quit':
         trans = 255
         while trans > 0:
             screen.fill(white)
+            Background('images/battle_background.png', [0, 0])
             battle_poke.hp_bar(400, 400)
             trainer.hp_bar(200, 100)
             battle_poke.xp_text(400, 400)
@@ -729,6 +763,7 @@ while status != 'quit':
         trans = 255
         while trans > 0:
             screen.fill(white)
+            Background('images/battle_background.png', [0, 0])
             battle_poke.hp_bar(400, 400)
             trainer.hp_bar(200, 100)
             battle_poke.xp_text(400, 400)
