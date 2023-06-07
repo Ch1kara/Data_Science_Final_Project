@@ -501,8 +501,8 @@ battle_choices = []
 
 # Makes Pokémon into Pokémon class object
 bulbasaur = Pokemon("Bulbasaur", 50, 225)
-squirtle = Pokemon('Squirtle', 350, 225)
 charmander = Pokemon("Charmander", 650, 225)
+squirtle = Pokemon('Squirtle', 350, 225)
 starters = [bulbasaur, charmander, squirtle]
 
 # Making buttons (Still need to change the set_sprite because Image button needs the file name not the actual image)
@@ -523,6 +523,8 @@ while status != 'quit':
         if event.type == pygame.KEYDOWN:
             if event.type == pygame.K_y:
                 status = 'title'
+                pokedex = None
+                pokedex = Pokedex() #Resetting their party
 
             elif event.type == pygame.K_n:
                 status = 'quit'
@@ -544,9 +546,6 @@ while status != 'quit':
                 if starter is not None:
                     starter.Level = 5
                     pokedex.add_mon(starter)
-                    # enemy trainer
-                    enemy = ai()
-                    trainer = Pokemon(enemy, 250, -50)
                     time.sleep(2)
 
                     status = 'selection'
@@ -559,6 +558,9 @@ while status != 'quit':
                     if poke_button.collidepoint(click_loc):
                         battle_poke = pokedex.party[i]
                         message(f"You chose {battle_poke.name}")
+                        # enemy trainer
+                        enemy = ai()
+                        trainer = Pokemon(enemy, 250, -50)
                         time.sleep(3)
                         status = "pre battle"
 
@@ -752,10 +754,11 @@ while status != 'quit':
 
         # removes Pokémon from Pokédex and if you still have another Pokémon loops back, so you can fight with it
         pokedex.mon_faint(battle_poke)
+        battle_poke = None
         if pokedex.checklen() == 0:
             status = 'game over'
         else:
-            status = 'pre battle'
+            status = 'selection'
         pygame.display.update()
 
     if status == 'trainer faint':
@@ -771,14 +774,18 @@ while status != 'quit':
             battle_poke.paint()
             trainer.paint(trans)
             message(f"{trainer.name} fainted!")
+            trans = trans - 50
+            time.sleep(0.5)
         # resetting the health of each Pokémon
         battle_poke.current_HP = battle_poke.HP
         trainer.current_HP = trainer.HP
         battle_poke.update_level(trainer)
-        pokedex.add_mon(trainer)
+        if len(pokedex.party) < 6: #Checking if the player already has six pokemon.
+            pokedex.add_mon(trainer) #Add if they dont
+        trainer = None #Resxeting to make sure the old pokemon isnt attached to the ai
 
         # need to make this status
-        status = 'pre battle'
+        status = 'selection'
         pygame.display.update()
 
     if status == 'game over':
@@ -790,3 +797,13 @@ while status != 'quit':
 
 pygame.quit()
 sys.exit()
+
+Notes at the bottom for Andrew
+
+    - Made it so if opponent faints then their pokemon is added to party, and also if their pokemon faints while battling someone else, they just find a new opponent instead, rather than choosing another pokemon to continue fighting the same opponent.
+    -It should loop through the game and if they press y at any point, it should take them to the title screen and clear their party
+    -Theres an issue where in the selection screen if someone has more than three pokemon, the ones after cannot be selected. (The buttons appear but they cant be clicked on), I didn't want to try and mess things up so just take a look at the selection function when you get the chance.'
+    -Also all of this is still pretty buggy for me but I think theres a good chance it might just be my computer. Things should work but I don't know for sure, because every time I launch the game I have the lovely spinny wheel thingy'
+    -May have left things out, let me know if theres anything u dont understand or recognize, and it may have been my doing.
+    -As it is now, it doesn't look like i'll be in class for coding tomorrow but we'll see' If not, I can try to be awake by coding class and be somewhat useful
+    -Text me if u have any other questions
