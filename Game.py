@@ -805,7 +805,7 @@ while status != 'quit':
         if len(pokedex.party) < 6: #Checking if the player already has six pokemon.
             pokedex.add_mon(trainer) #Add if they dont
             print(pokedex.party)
-        trainer = None #Resxeting to make sure the old pokemon isnt attached to the ai
+        trainer = None #Reseting to make sure the old pokemon isnt attached to the ai
 
         # resets these variables so the screens can be drawn again
         title_drawn = False
