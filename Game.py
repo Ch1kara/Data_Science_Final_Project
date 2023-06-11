@@ -564,7 +564,7 @@ while status != 'quit':
                     status = 'selection'
 
             elif status == 'selection':
-                for i in range(len(pokedex.party)-1):
+                for i in range(len(pokedex.party)):
                     # loops through each party pokemon button to see which one was clicked
                     poke_button = battle_choices[i]
                     # If click where button is, then new active pokemon
@@ -628,6 +628,8 @@ while status != 'quit':
             title('A trainer has appeared ... choose your Pokémon!', 55)
             message('')
             select_drawn = True
+        #Reset battle choices list so the buttons are reset before being made again
+        battle_choices = []
         # select Pokémon buttons appear
         for i in range(len(pokedex.party)):
             # Creating buttons for each pokemon in the party
@@ -715,7 +717,10 @@ while status != 'quit':
 
         # creating the move buttons
         for i in range(len(battle_poke.Moves)):
-            button = create_button(posx[i], posy[i], 450, 100, battle_poke.Moves[i])  # Make 3 to 4 buttons for moves
+            try:
+                button = create_button(posx[i], posy[i], 450, 100, battle_poke.Moves[i])  # Make 3 to 4 buttons for moves
+            except:
+                continue
             # black outline of buttons
             # pygame.draw.rect(screen, black, (posx[i], posy[i], 450, 100), 3)
             move_buttons.append(button)
