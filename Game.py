@@ -1,4 +1,3 @@
-import urllib
 import pygame
 from pygame.locals import *
 import sys
@@ -6,6 +5,7 @@ import time
 import random as rand
 
 pygame.init()
+clock = pygame.time.Clock()
 
 # screen size and title at the top
 screen_width = 1000
@@ -466,6 +466,7 @@ def title(message, size):
     '''Title screen message given message and size of font'''
     font = pygame.font.SysFont("squaresans", size)
     text = font.render(message, True, black)
+
     text_rect = text.get_rect()
     text_rect.x = 50
     text_rect.y = 150
@@ -491,13 +492,13 @@ trainer = None
 battle_poke = None
 Charizard = Pokemon("Charizard", 50, 225)
 Mewtwo = Pokemon("Mewtwo", 175, 300)
-Mewtwo.Level = 1000 # god mode
+Mewtwo.Level = 1000  # god mode
 pokedex = Pokedex()
 pokedex.add_mon(Mewtwo)
 pokedex.add_mon(Charizard)
-status = 'title'
 move_buttons = []
 battle_choices = []
+status = 'title'
 
 # Makes Pokémon into Pokémon class object
 bulbasaur = Pokemon("Bulbasaur", 50, 225)
@@ -511,6 +512,12 @@ starter2 = ImageButton(335, 100, charmander.set_sprite("front"), 1.2, "charmande
 starter3 = ImageButton(666, 100, squirtle.set_sprite("front"), 1.2, "squirtle")
 s_image = [starter1, starter2, starter3]
 
+# used inside the game loop so that some things won't be drawn multiple times
+title_drawn = False
+select_drawn = False
+move_drawn = False
+pre_drawn = False
+
 # Game Loop
 while status != 'quit':
 
@@ -522,9 +529,14 @@ while status != 'quit':
         # If the user wants to or doesn't want to play again
         if event.type == pygame.KEYDOWN:
             if event.type == pygame.K_y:
-                status = 'title'
+                # resets these variables so they can be drawn again
+                title_drawn = False
+                select_drawn = False
+                move_drawn = False
+                pre_drawn = False
                 pokedex = None
-                pokedex = Pokedex() #Resetting their party
+                pokedex = Pokedex() # Resetting their party
+                status = 'title'
 
             elif event.type == pygame.K_n:
                 status = 'quit'
@@ -535,6 +547,7 @@ while status != 'quit':
             if status == "title":
                 if start_button.collidepoint(click_loc):
                     time.sleep(1)
+                    title_drawn = False
                     status = "starter"
 
             elif status == 'starter':
@@ -551,8 +564,8 @@ while status != 'quit':
                     status = 'selection'
 
             elif status == 'selection':
-                for i in range(len(pokedex.party)):
-                    # loops through each pokemon(in party) button to see which one was clicked
+                for i in range(len(pokedex.party)-1):
+                    # loops through each party pokemon button to see which one was clicked
                     poke_button = battle_choices[i]
                     # If click where button is, then new active pokemon
                     if poke_button.collidepoint(click_loc):
@@ -562,30 +575,34 @@ while status != 'quit':
                         enemy = ai()
                         trainer = Pokemon(enemy, 250, -50)
                         time.sleep(3)
+                        select_drawn = False
                         status = "pre battle"
 
             elif status == 'player turn':
                 # loops through each button to see which one was clicked
-                for i in range(len(battle_poke.Moves)):
+                for i in range(len(battle_poke.Moves)-1):
                     button = move_buttons[i]
                     if button.collidepoint(click_loc):
                         move = battle_poke.Moves[i]
                         battle_poke.use_attack(trainer, move)
                         time.sleep(2)
-
+                        move_drawn = False
                     if trainer.current_HP == 0:
                         status = 'trainer faint'
                     else:
                         status = 'trainer turn'
     if status == "title":
-        screen.fill(white)
-        Background('images/gen_background.png', [0, 0])
-        title('Welcome to the Wonderful World of Pokemon', 60)
-        pygame.draw.rect(screen, black, (447, 372, 106, 106), 3)
+        # draw once to prevent flickering
+        while not title_drawn:
+            screen.fill(white)
+            Background('images/gen_background.png', [0, 0])
+            title('Welcome to the Wonderful World of Pokemon', 60)
+            pygame.draw.rect(screen, black, (447, 372, 106, 106), 3)
+            title_drawn = True
         start_button = create_button(450, 375, 100, 100, "Start")
-        pygame.display.update()
+        #pygame.display.update()
 
-    if status == 'starter':
+    elif status == 'starter':
         screen.fill(white)
         Background('images/gen_background.png', [0, 0])
         starter1.draw()  # Drawing the buttons on the screen
@@ -599,29 +616,29 @@ while status != 'quit':
         pygame.draw.rect(screen, black, (663, 97, width + 6, height + 6), 3)
         message("Choose your starter Pokémon!")
 
-        pygame.display.update()
+        #pygame.display.update()
 
-    if status == 'selection':
-        screen.fill(white)
-        Background('images/battle_background.png', [0, 0])
-        title('A trainer has appeared ... choose your Pokémon!', 55)
-        message('')
-        # select Pokémon buttons appear
+    elif status == 'selection':
         x = [15, 340, 665, 15, 340, 665]
-        y = [535, 535, 535, 630, 630, 630]
-        counter = 0
-        for pokemon in pokedex.party:
+        y = [535, 535, 535, 635, 635, 635]
+        # draw once to prevent flickering
+        while not select_drawn:
+            screen.fill(white)
+            Background('images/battle_background.png', [0, 0])
+            title('A trainer has appeared ... choose your Pokémon!', 55)
+            message('')
+            select_drawn = True
+        # select Pokémon buttons appear
+        for i in range(len(pokedex.party)):
             # Creating buttons for each pokemon in the party
-            button = create_button(x[counter], y[counter], 320, 95, pokemon.name)
+            button = create_button(x[i], y[i], 320, 95, pokedex.party[i].name)
             # black outline of each button
-            pygame.draw.rect(screen, black, (x[counter], y[counter], 320, 95), 3)
             battle_choices.append(button)
-            counter += 1
 
-    if status == 'pre battle':
+    elif status == 'pre battle':
         screen.fill(white)
         Background('images/battle_background.png', [0, 0])
-        pygame.display.update()
+        #pygame.display.update()
 
         # trainer repositioning and fading in
         trainer.x = 520
@@ -677,31 +694,32 @@ while status != 'quit':
         else:
             status = 'trainer turn'
 
-        pygame.display.update()
+        #pygame.display.update()
 
     if status == 'player turn':
-        screen.fill(white)
-        Background('images/battle_background.png', [0, 0])
-        battle_poke.paint()
-        trainer.paint()
+        posx = [50, 510, 50, 510]
+        posy = [530, 530, 635, 635]
+        # draw once to prevent flickering
+        if not move_drawn:
+            screen.fill(white)
+            Background('images/battle_background.png', [0, 0])
+            battle_poke.paint()
+            trainer.paint()
+            message('')
+
         battle_poke.hp_bar(400, 400)
         trainer.hp_bar(200, 100)
         battle_poke.xp_text(400, 400)
         trainer.xp_text(200, 100)
+        #pygame.display.update()
 
         # creating the move buttons
-        posx = [50, 510, 50, 510]
-        posy = [530, 530, 630, 630]
-        counter = 0
-        message('')
-        for move in battle_poke.Moves:
-            button = create_button(posx[counter], posy[counter], 450, 100, move)  # Make 3 to 4 buttons for moves
+        for i in range(len(battle_poke.Moves)):
+            button = create_button(posx[i], posy[i], 450, 100, battle_poke.Moves[i])  # Make 3 to 4 buttons for moves
             # black outline of buttons
-            pygame.draw.rect(screen, black, (posx[counter], posy[counter], 450, 100), 3)
+            # pygame.draw.rect(screen, black, (posx[i], posy[i], 450, 100), 3)
             move_buttons.append(button)
-            counter += 1
         time.sleep(3)
-        pygame.display.update()
 
     if status == 'trainer turn':
         screen.fill(white)
@@ -712,7 +730,7 @@ while status != 'quit':
         trainer.hp_bar(100, 100)
         battle_poke.xp_text(500, 400)
         trainer.xp_text(100, 100)
-        pygame.display.update()
+        #pygame.display.update()
 
         # buffer zone between player and trainer turns
         message('')
@@ -733,7 +751,7 @@ while status != 'quit':
         else:
             status = 'player turn'
 
-        pygame.display.update()
+        #pygame.display.update()
 
     # this should be correct, but I'm unsure about the status loop(to pre battle)
     if status == 'player faint':
@@ -759,7 +777,7 @@ while status != 'quit':
             status = 'game over'
         else:
             status = 'selection'
-        pygame.display.update()
+        #pygame.display.update()
 
     if status == 'trainer faint':
         # make Pokémon slowly fade out
@@ -782,11 +800,16 @@ while status != 'quit':
         battle_poke.update_level(trainer)
         if len(pokedex.party) < 6: #Checking if the player already has six pokemon.
             pokedex.add_mon(trainer) #Add if they dont
+            print(pokedex.party)
         trainer = None #Resxeting to make sure the old pokemon isnt attached to the ai
 
-        # need to make this status
+        # resets these variables so the screens can be drawn again
+        title_drawn = False
+        select_drawn = False
+        move_drawn = False
+        pre_drawn = False
         status = 'selection'
-        pygame.display.update()
+        #pygame.display.update()
 
     if status == 'game over':
         message(f"You lost, you are not cut out to be a pokemon master")
@@ -794,16 +817,17 @@ while status != 'quit':
         message(f"Do you want to play again?(Y/N)")
 
     pygame.display.flip()
+    clock.tick(60)
 
 pygame.quit()
 sys.exit()
 
-Notes at the bottom for Andrew
-
-    - Made it so if opponent faints then their pokemon is added to party, and also if their pokemon faints while battling someone else, they just find a new opponent instead, rather than choosing another pokemon to continue fighting the same opponent.
-    -It should loop through the game and if they press y at any point, it should take them to the title screen and clear their party
-    -Theres an issue where in the selection screen if someone has more than three pokemon, the ones after cannot be selected. (The buttons appear but they cant be clicked on), I didn't want to try and mess things up so just take a look at the selection function when you get the chance.'
-    -Also all of this is still pretty buggy for me but I think theres a good chance it might just be my computer. Things should work but I don't know for sure, because every time I launch the game I have the lovely spinny wheel thingy'
-    -May have left things out, let me know if theres anything u dont understand or recognize, and it may have been my doing.
-    -As it is now, it doesn't look like i'll be in class for coding tomorrow but we'll see' If not, I can try to be awake by coding class and be somewhat useful
-    -Text me if u have any other questions
+# Notes at the bottom for Andrew
+#
+#     - Made it so if opponent faints then their pokemon is added to party, and also if their pokemon faints while battling someone else, they just find a new opponent instead, rather than choosing another pokemon to continue fighting the same opponent.
+#     -It should loop through the game and if they press y at any point, it should take them to the title screen and clear their party
+#     -Theres an issue where in the selection screen if someone has more than three pokemon, the ones after cannot be selected. (The buttons appear but they cant be clicked on), I didn't want to try and mess things up so just take a look at the selection function when you get the chance.'
+#     -Also all of this is still pretty buggy for me but I think theres a good chance it might just be my computer. Things should work but I don't know for sure, because every time I launch the game I have the lovely spinny wheel thingy'
+#     -May have left things out, let me know if theres anything u dont understand or recognize, and it may have been my doing.
+#     -As it is now, it doesn't look like i'll be in class for coding tomorrow but we'll see' If not, I can try to be awake by coding class and be somewhat useful
+#     -Text me if u have any other questions
