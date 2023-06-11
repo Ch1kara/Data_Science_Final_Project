@@ -502,15 +502,14 @@ status = 'title'
 
 # Makes Pokémon into Pokémon class object
 bulbasaur = Pokemon("Bulbasaur", 50, 225)
-charmander = Pokemon("Charmander", 650, 225)
-squirtle = Pokemon('Squirtle', 350, 225)
+charmander = Pokemon("Charmander", 350, 225)
+squirtle = Pokemon('Squirtle', 650, 225)
 starters = [bulbasaur, charmander, squirtle]
 
 # Making buttons (Still need to change the set_sprite because Image button needs the file name not the actual image)
 starter1 = ImageButton(4, 100, bulbasaur.set_sprite("front"), 1.2, "bulbasaur")
 starter2 = ImageButton(335, 100, charmander.set_sprite("front"), 1.2, "charmander")
 starter3 = ImageButton(666, 100, squirtle.set_sprite("front"), 1.2, "squirtle")
-s_image = [starter1, starter2, starter3]
 
 # used inside the game loop so that some things won't be drawn multiple times
 title_drawn = False
